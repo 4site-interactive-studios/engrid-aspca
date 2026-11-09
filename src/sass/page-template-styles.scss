@@ -1,50 +1,58 @@
 // The most broadly used CSS Custom Properties for quick theming.
 // Uncomment to use and reference engrid-scrips SASS files for more CSS Custom Properties.
 // All CSS Custom Properties should be scoped to the theme using CSS Data Attributes.
-[data-engrid-theme="engrid-TBD"] {
+[data-engrid-theme="aspca"] {
+  --color_orange: #f75f00;
+  --color_navy: #002e4d;
+  --color_blue: #0089e5;
+  --color_gray: #cfcfcf;
+  --color_light-gray: #dddddd;
+  --color_black: #363636;
+
   // TYPOGRAPHY DEFAULT
-  // --default_font-family: var(--native-fonts__sans-serif);
-  // --default_color: initial;
-  // --default_font-size: var(--root_font-size);
+  --default_font-family: "Helvetica Now", var(--native-fonts__sans-serif);
+  --bold_font-family: "Avant Garde", var(--default_font-family);
+  --default_color: var(--color_black);
+  --default_font-size: var(--root_font-size);
   // --default_font-weight: initial;
   // --default_line-height: initial;
 
   // TYPOGRAPHY H1
-  // --h1_font-family: var(--default_font-family);
-  // --h1_color: initial;
-  // --h1_font-size: calc(var(--root_font-size) * var(--scale-up_160pct));
-  // --h1_font-weight: initial;
-  // --h1_line-height: initial;
+  --h1_font-family: var(--bold_font-family);
+  --h1_font-size: 38px;
+  --h1_font-weight: 700;
+  --h1_line-height: 1.2em;
 
   // TYPOGRAPHY P
-  // --p_font-family: var(--default_font-family);
-  // --p_color: initial;
-  // --p_font-size: var(--root_font-size);
-  // --p_font-weight: initial;
-  // --p_line-height: initial;
+  --p_font-family: var(--default_font-family);
+  --p_color: var(--default_color);
+  --p_font-size: 18px;
+  --p_font-weight: initial;
+  --p_line-height: initial;
 
   // TYPOGRAPHY A
-  // --a_font-family: var(--default_font-family);
-  // --a_color: initial;
-  // --a_text-decoration: underline;
+  --a_font-family: var(--default_font-family);
+  --a_color: var(--color_orange);
+  --a_text-decoration: underline;
 
   // TYPOGRAPHY A:FOCUS
   // TYPOGRAPHY A:HOVER
-  // --a_color_hover: var(--a_color);
-  // --a_text-decoration_hover: initial;
+  --a_color_hover: var(--a_color);
+  --a_text-decoration_hover: initial;
 
   // TYPOGRAPHY INPUT
-  // --input_font-family: var(--default_font-family);
-  // --input_color: #000000;
-  // --input_font-size: var(--root_font-size);
-  // --input_font-weight: initial;
-  // --input_line-height: initial;
-  // --input_background-color: #fafafa;
-  // --input_border-width: 1px;
-  // --input_border-color: #dfdfe1;
-  // --input_border-radius: 6px;
-  // --input_placeholder-color: var(--color_light-gray);
-  // --input_box-shadow: inset 0 2px 2px -1px rgba(74, 74, 104, 0.1);
+  --input_font-family: var(--default_font-family);
+  --input_color: var(--color_black);
+  --input_font-size: var(--root_font-size);
+  --input_font-weight: initial;
+  --input_line-height: 38px;
+  --input_background-color: var(--color_white);
+  --input_border-width: 2px;
+  --input_border-color: var(--color_gray);
+  --input_border-radius: 5px;
+  --input_placeholder-color: var(--color_gray);
+  --input_box-shadow: unset;
+  --label_line-height: 27px;
 
   // TYPOGRAPHY INPUT:FOCUS
   // TYPOGRAPHY INPUT:HOVER
@@ -55,16 +63,17 @@
   // --input_box-shadow_hover: --input_box-shadow;
 
   // TYPOGRAPHY BUTTON
-  // --button_font-family: var(--default_font-family);
-  // --button_color: var(--color_white);
-  // --button_font-size: var(--root_font-size);
+  --button_font-family: var(--bold_font-family);
+  --button_color: var(--color_white);
+  --button_font-size: 30px;
   // --button_font-weight: initial;
   // --button_line-height: initial;
-  // --button_background-color: #535b61;
-  // --button_border-width: 1px;
-  // --button_border-color: var(--color_black);
-  // --button_border-radius: 6px;
+  --button_background-color: var(--color_blue);
+  --button_border-width: 0px;
+  --button_border-radius: 4px;
 
+  --submit__button_background-color: var(--color_orange);
+  --submit__button_background-color_hover: var(--color_navy);
   // TYPOGRAPHY BUTTON:HOVER
   // --button_color_hover: var(--button_color);
   // --button_background-color_hover: var(--color_black);
@@ -84,7 +93,19 @@
 }
 
 /* Add your custom theme styles here */
-[data-engrid-theme="engrid-TBD"] {
+[data-engrid-theme="aspca"] {
+  .button-orange,
+  .en__submit button {
+    background-image: repeating-linear-gradient(
+      135deg,
+      #ffffff33 0px,
+      #ffffff33 1px,
+      transparent 1px,
+      transparent 6px
+    );
+    background-blend-mode: normal; /* Optional: controls how the line interacts with the base */
+  }
+
   @mixin until-mobile-l {
     // STYLES
   }

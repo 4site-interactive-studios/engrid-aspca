@@ -15,8 +15,12 @@ const options: Options = {
   SkipToMainContentLink: true,
   SrcDefer: true,
   ProgressBar: true,
+  MinAmount: 5,
+  MaxAmount: 999999,
+  MinAmountMessage: "Minimum gift amount is $5",
+  MaxAmountMessage: "Maximum gift amount is $999,999",
   Debug: App.getUrlParameter("debug") == "true" ? true : false,
   onLoad: () => customScript(App),
-  onResize: () => console.log("Starter Theme Window Resized"),
+  onResize: () => {},
 };
 new App(options);
