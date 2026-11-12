@@ -1,0 +1,66 @@
+.engrid-slideshow {
+  --engrid-slideshow-transition-duration: 600ms;
+
+  display: grid;
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+
+  > div {
+    grid-area: 1 / 1;
+    min-width: 0;
+    pointer-events: none;
+    transform: translateX(100%);
+    visibility: hidden;
+    width: 100%;
+    z-index: 0;
+    position: relative;
+
+    img {
+      display: block;
+      height: auto;
+      max-width: 100%;
+      width: 100%;
+    }
+    p {
+      position: absolute;
+      bottom: 0;
+      background-color: rgba(0, 0, 0, 0.5);
+      color: white;
+      margin: 0;
+      padding: 18px 9px;
+    }
+  }
+
+  // Keep the first slide visible if JavaScript has not initialized yet.
+  &:not(.engrid-slideshow--ready) > div:first-child {
+    pointer-events: auto;
+    transform: translateX(0);
+    visibility: visible;
+  }
+
+  > .engrid-slideshow__slide--active,
+  > .engrid-slideshow__slide--leaving {
+    transition: transform var(--engrid-slideshow-transition-duration)
+      ease-in-out;
+    visibility: visible;
+  }
+
+  > .engrid-slideshow__slide--active {
+    pointer-events: auto;
+    transform: translateX(0);
+    z-index: 2;
+  }
+
+  > .engrid-slideshow__slide--leaving {
+    transform: translateX(-100%);
+    z-index: 1;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    > .engrid-slideshow__slide--active,
+    > .engrid-slideshow__slide--leaving {
+      transition-duration: 0.01ms;
+    }
+  }
+}

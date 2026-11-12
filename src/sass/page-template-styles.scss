@@ -8,6 +8,8 @@
   --color_gray: #cfcfcf;
   --color_light-gray: #dddddd;
   --color_black: #363636;
+  --error__color: #ed541d;
+  --error__color_faded: #fef5f1;
 
   // TYPOGRAPHY DEFAULT
   --default_font-family: "Helvetica Now", var(--native-fonts__sans-serif);
@@ -88,14 +90,437 @@
   // --give-monthly-donation-amount-appended-label: "/mo";
   // --give-annual-donation-amount-appended-label: "/yr";
   // --recurring-frequency__button_count: 4;
-  // --donation-amount__button_count: 4;
-  // --give-by-select__button_count: 4;
+  --donation-amount__button_count: 6;
+  --donation-amount__button_font-size: 18px;
+  --donation-amount__button_font-weight: 400;
+  --donation-amount__button_line-height: 27px;
+  --donation-amount__button_padding: 18px 22px;
+  --button_background-color: var(--color_gray);
+  --button_background-color_hover: var(--color_gray);
+  --donation-amount__button_background-color_checked: var(--color_orange);
+  --donation-amount__button_background-color_hover: var(--color_blue);
+  --recurring-frequency__button_background-color_checked: var(--color_orange);
+  --recurring-frequency__button_background-color_hover: var(--color_blue);
+  --give-monthly-donation-amount-appended-label: "";
+  --give-annual-donation-amount-appended-label: "";
+  --give-by-select__button_background-color_checked: var(--color_orange);
+
+  --radio-to-buttons__button_count: 2;
 }
 
 /* Add your custom theme styles here */
 [data-engrid-theme="aspca"] {
+  &[data-engrid-subtheme="replica"] {
+    --engrid__page_background-color: #f5f5f5;
+    --engrid__body-title_background-color: var(--color_navy);
+    --engrid__body-main_background-color: var(--color_white);
+    --engrid__body-main_padding: 20px;
+    --engrid__body-top_padding: 40px;
+    --engrid__content-footer_background-color: var(--color_white);
+    --engrid__content-footer_padding: 40px;
+    --engrid__content-footer_margin: 30px 0;
+    --engrid__body_box-shadow: unset;
+    --recurring-frequency__button_count: 3;
+    &[data-engrid-thank-you="true"] {
+      --engrid__body-main_padding: 45px;
+      --engrid__page_background-color: var(--color_white);
+      --engrid__content-footer_margin: 30px 0 0 0;
+      --engrid__content-footer_background-color: #f5f5f5;
+    }
+
+    &#en__pagebuilder {
+      .page-alert,
+      .content-header,
+      .body-header,
+      .body-headerOutside,
+      .body-bannerOverlay,
+      .body-footerOutside,
+      .content-footerSpacer,
+      .content-preFooter,
+      .page-backgroundImageOverlay {
+        display: none;
+        &:has(.en__component) {
+          display: block;
+          background-color: #ff00001a;
+          outline: 1px solid #ff0000;
+        }
+      }
+    }
+
+    &[data-engrid-layout*="2col"] {
+      @media screen and (min-width: 768px) and (max-width: 1139px) {
+        --recurring-frequency__button_count: 1;
+        --give-by-select__button_count: 1;
+        --radio-to-buttons__button_count: 1;
+
+        @for $i from 1 through 11 {
+          .i#{$i}-m100 .en__field:nth-of-type(#{$i}) {
+            flex-basis: 100%;
+          }
+          .i#{$i}-m50 .en__field:nth-of-type(#{$i}) {
+            flex-basis: 50%;
+          }
+        }
+      }
+    }
+
+    @media screen and (max-width: 529px) {
+      --recurring-frequency__button_count: 1;
+      --give-by-select__button_count: 1;
+      --radio-to-buttons__button_count: 1;
+    }
+
+    #header {
+      height: 93px;
+      width: 100%;
+      overflow: hidden;
+      z-index: 5;
+      background-color: var(--color_white);
+
+      #logo {
+        background: transparent
+          url(https://secure.aspca.org/files/aspca/themes/aspca_2015/images-source/navlogo-022316.png)
+          no-repeat 0 0;
+        background-size: contain;
+        width: 209px;
+        height: 56px;
+        display: block;
+        margin-left: 30px;
+        margin-top: 19px;
+      }
+
+      @media only screen and (max-width: 767px) {
+        height: 68px;
+
+        #logo {
+          width: 111px;
+          height: 29px;
+          margin: 20px auto 0;
+          background-size: 111px 29px;
+        }
+      }
+
+      @media only screen and (min-width: 768px) and (max-width: 1139px) {
+        width: 100%;
+        margin: 0 auto;
+        height: 97px;
+
+        #logo {
+          margin-left: 0;
+        }
+      }
+
+      @media only screen and (-webkit-min-device-pixel-ratio: 2),
+        only screen and (min-resolution: 192dpi) {
+        #logo {
+          background: transparent
+            url(https://secure.aspca.org/files/aspca/2color_logo_022516.png)
+            no-repeat 0 0;
+          background-size: 209px 56px;
+        }
+      }
+
+      @media only screen and (max-width: 767px) and (-webkit-min-device-pixel-ratio: 2),
+        only screen and (max-width: 767px) and (min-resolution: 192dpi) {
+        #logo {
+          background: transparent
+            url(https://secure.aspca.org/files/aspca/2color_logo_022516.png)
+            no-repeat 0 0;
+          background-size: 111px 29px;
+        }
+      }
+    }
+
+    #bottom-footer {
+      background-color: #002e4d;
+      overflow: auto;
+      padding-top: 70px;
+
+      a.footer-logo {
+        display: block;
+        width: 173px;
+        height: 46px;
+        margin: 0 auto;
+        padding: 0;
+        background: transparent
+          url(https://secure.aspca.org/files/aspca/themes/aspca_2015/images-source/logo-footer.png)
+          no-repeat 0 0;
+        background-size: 173px 46px;
+        text-indent: 200px;
+        overflow: hidden;
+        margin-bottom: 34px;
+        color: transparent !important;
+      }
+
+      .footer-content-center {
+        width: 900px !important;
+        overflow: hidden;
+        margin: 0 auto;
+        position: relative;
+
+        .region-bottom-footer.left {
+          float: left;
+          width: 100%;
+          color: #929292;
+          font-size: 15px;
+          text-align: center;
+
+          a {
+            color: #fff;
+            text-decoration: none;
+            padding: 0 5px;
+          }
+        }
+      }
+
+      @media only screen and (max-width: 767px) {
+        margin-top: 0;
+      }
+
+      @media only screen and (max-width: 920px) {
+        .footer-content-center {
+          margin: 30px auto;
+          width: 100% !important;
+
+          .region-bottom-footer.left {
+            width: 100%;
+            margin-top: 100px;
+
+            p {
+              padding: 0 20px;
+            }
+          }
+        }
+      }
+
+      @media only screen and (min-width: 768px) and (max-width: 1139px) {
+        .footer-content-center {
+          width: auto;
+        }
+
+        .region-bottom-footer.left {
+          float: none !important;
+          width: auto;
+          margin: 0 auto;
+        }
+      }
+
+      @media only screen and (-webkit-min-device-pixel-ratio: 2),
+        only screen and (min-resolution: 192dpi) {
+        a.footer-logo {
+          background: transparent
+            url(https://secure.aspca.org/files/aspca/themes/aspca_2015/images/wrappers/aspca-logo@2x.png)
+            no-repeat 0 0;
+          background-size: 173px 46px;
+        }
+      }
+    }
+
+    .en__component--advrow .body-title {
+      grid-column: pc;
+      border-bottom: 6px solid var(--color_orange);
+      color: var(--color_white);
+      &:has(.banner-image) {
+        padding: 0;
+      }
+      > * {
+        grid-column: rbc-start / rbc-end;
+      }
+      > .banner-image {
+        grid-column: pc;
+        p {
+          margin: 0;
+        }
+        img {
+          width: 100%;
+          height: auto;
+        }
+      }
+
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6 {
+        color: inherit;
+      }
+    }
+
+    /* Phone disclaimer */
+    .en__field--phoneNumber2 .en__field__element::after {
+      content: "By providing my number, I agree that ASPCA and its agents may contact me by phone call regarding ASPCA programs, events and membership.";
+      font-size: 10px;
+    }
+
+    .en__component--advrow .body-top {
+      background-color: #f5f5f5;
+      padding: 0;
+      > * {
+        background-color: var(--engrid__body-main_background-color);
+        padding: var(--engrid__body-top_padding);
+      }
+    }
+
+    &:not([data-engrid-thank-you="true"])
+      .en__component--advrow
+      .content-footer {
+      grid-column: bc-start / bc-end;
+    }
+
+    p .signature {
+      width: 80px;
+      height: 46px;
+      margin: unset;
+    }
+
+    .ty-page-socials {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      .springboard-social-links {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+      }
+    }
+
+    .ty-page-actions {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      .actions-content ul {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        gap: 20px;
+        list-style-type: none;
+        flex-wrap: wrap;
+      }
+    }
+
+    @media screen and (min-width: 768px) {
+      .en__component--advrow
+        .body-banner:has(.en__component--codeblock .engrid-slideshow) {
+        margin-top: -145px;
+        z-index: 4 !important;
+      }
+
+      form > .en__component--advrow,
+      #engrid > .en__component--advrow,
+      form > .en__component--advrow > * {
+        grid-template-columns:
+          [pc-start rpc-start] minmax(0, 1fr) [rpc-end
+          cc-start rcc-start] 0 [rcc-end
+          bc-start rbc-start] minmax(0, 676px) [rbc-end]
+          30px [lbc-start]
+          minmax(0, 460px) [lbc-end bc-end
+          lcc-start] 0 [lcc-end cc-end
+          lpc-start] minmax(0, 1fr) [lpc-end pc-end];
+      }
+
+      form > .en__component--advrow {
+        .body-banner,
+        .body-bannerOverlay {
+          grid-column: lbc;
+        }
+
+        .body-banner {
+          grid-row: body-banner;
+        }
+
+        .body-main {
+          grid-row-start: body-title-end;
+        }
+      }
+    }
+
+    @media screen and (max-width: 767px) {
+      --recurring-frequency__button_font-size: 24px;
+      --engrid__body-main_padding: 20px;
+      --engrid__body-title_padding: 0 20px;
+      --engrid__body-top_padding: 0 20px;
+
+      form > .en__component--advrow,
+      #engrid > .en__component--advrow,
+      form > .en__component--advrow > * {
+        grid-template-columns:
+          [pc-start lpc-start rpc-start cc-start lcc-start rcc-start bc-start lbc-start rbc-start]
+          auto
+          [lbc-end rbc-end bc-end lcc-end rcc-end cc-end lpc-end rpc-end pc-end];
+      }
+
+      form > .en__component--advrow,
+      #engrid > .en__component--advrow {
+        grid-template-rows:
+          [page-start page-alert-start] min-content [page-alert-end
+          content-header-start] min-content [content-header-end
+          body-headerOutside-start] min-content [body-headerOutside-end
+          body-header-start] min-content [body-header-end
+          body-banner-start] min-content [body-banner-end
+          body-bannerOverlay-start] min-content [body-bannerOverlay-end
+          body-title-start] min-content [body-title-end
+          body-top-start] min-content [body-top-end
+          body-side-start] min-content [body-side-end
+          body-main-start] min-content [body-main-end
+          body-bottom-start] min-content [body-bottom-end
+          body-footer-start] min-content [body-footer-end
+          body-footerOutside-start] min-content [body-footerOutside-end
+          content-footerSpacer-start] minmax(0, 1fr) [content-footerSpacer-end
+          content-preFooter-start] min-content [content-preFooter-end
+          content-footer-start] min-content [content-footer-end
+          page-backgroundImage-start] min-content [page-backgroundImage-end
+          page-backgroundImageOverlay-start] min-content [page-backgroundImageOverlay-end page-end
+          page-customCode-start] min-content [page-customCode-end];
+      }
+
+      form > .en__component--advrow {
+        .body-banner,
+        .body-bannerOverlay,
+        .body-top,
+        .body-side,
+        .body-main,
+        .body-bottom {
+          grid-column: bc;
+        }
+
+        .body-top {
+          grid-row: body-top;
+        }
+
+        .body-main {
+          grid-row: body-main;
+        }
+
+        .body-title {
+          border-bottom: unset;
+          border-top: 6px solid var(--color_orange);
+          color: var(--color_black);
+          background-color: var(--color_white);
+        }
+      }
+    }
+  }
+
+  b,
+  em,
+  strong {
+    font-family: var(--bold_font-family);
+  }
+
+  .transparency-badges {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+  }
+
   .button-orange,
   .en__submit button {
+    text-transform: uppercase;
     background-image: repeating-linear-gradient(
       135deg,
       #ffffff33 0px,
@@ -106,12 +531,86 @@
     background-blend-mode: normal; /* Optional: controls how the line interacts with the base */
   }
 
+  .radio-to-buttons_donationAmt {
+    --fields_spacing-inline: 4px;
+    .en__field--donationAmt.en__field--radio > .en__field__element {
+      justify-content: start;
+      .en__field__item {
+        flex-basis: unset;
+      }
+      .en__field__item--other {
+        flex: 1 1 100px;
+        width: auto;
+        min-width: 100px;
+        max-width: 200px;
+        input {
+          border-width: 2px;
+        }
+      }
+    }
+  }
+
+  .en__field--giveBySelect {
+    --button_background-color_checked: var(--color_orange);
+    --button_font-weight: 500;
+    --button_font-size: 19px;
+    --button_line-height: 32px;
+
+    label {
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #000;
+      gap: var(--spacing-4, 16px);
+      transition: background-color 0.35s ease;
+    }
+
+    label img {
+      width: auto;
+      margin: unset;
+      max-height: 28px;
+    }
+
+    label .google-pay,
+    label .apple-pay,
+    label .venmo,
+    label .bank,
+    label .daf {
+      filter: invert(100%);
+    }
+  }
+
+  .showif-apple {
+    display: none;
+  }
+
+  .hideif-apple {
+    display: unset;
+  }
+
+  &:not(#en__pagebuilder) {
+    @supports (font: -apple-system-body) and (hanging-punctuation: first) {
+      .showif-apple {
+        display: unset;
+      }
+
+      .hideif-apple {
+        display: none;
+      }
+    }
+  }
+
   @mixin until-mobile-l {
-    // STYLES
+    &:not(#en__pagebuilder):not([data-engrid-debug]) .showif-desktop {
+      display: none;
+    }
   }
 
   @mixin from-mobile-l {
-    // STYLES
+    &:not(#en__pagebuilder):not([data-engrid-debug]) .showif-mobile {
+      display: none;
+    }
   }
 
   @mixin simplified-header {
@@ -120,11 +619,11 @@
 
   // Example Breakpoints Stylings (See engrid-scripts > _engrid-breakpoints.scss for more breakpoints)
   &[data-engrid-layout] {
-    @media (max-width: 425px) {
+    @media (max-width: 767px) {
       @include until-mobile-l;
     }
 
-    @media (min-width: 426px) {
+    @media (min-width: 768px) {
       @include from-mobile-l;
     }
   }

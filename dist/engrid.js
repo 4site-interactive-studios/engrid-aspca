@@ -17,10 +17,10 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Monday, November 9, 2026 @ 12:06:16 ET
+ *  Date: Thursday, November 12, 2026 @ 17:16:10 ET
  *  By: nick
- *  ENGrid styles: v0.28.3
- *  ENGrid scripts: v0.28.7
+ *  ENGrid styles: v0.28.9
+ *  ENGrid scripts: v0.28.9
  *
  *  Created by 4Site Studios
  *  Come work with us or join our team, we would love to hear from you
@@ -12410,6 +12410,7 @@ class App extends engrid_ENGrid {
         new UsOnlyForm();
         new ThankYouPageConditionalContent();
         new EmbeddedEcard();
+        new EcardPreview();
         new CheckboxLabel();
         new PostDonationEmbed();
         new FrequencyUpsell();
@@ -13503,12 +13504,27 @@ class Ecard {
             if (closeButton) {
                 closeButton.setAttribute("role", "button");
                 closeButton.setAttribute("aria-label", "Close Preview");
-                document.addEventListener("keydown", (e) => {
+                const handleEscape = (e) => {
                     if (e.key === "Escape" &&
                         previewModal.classList.contains("preview--show")) {
                         closeButton.click();
                     }
-                });
+                };
+                document.addEventListener("keydown", handleEscape);
+                const previewIframe = previewModal.querySelector("iframe");
+                if (previewIframe) {
+                    const bindIframeEscape = () => {
+                        var _a;
+                        try {
+                            (_a = previewIframe.contentDocument) === null || _a === void 0 ? void 0 : _a.addEventListener("keydown", handleEscape);
+                        }
+                        catch (e) {
+                            // Cross-origin previews cannot expose their keyboard events.
+                        }
+                    };
+                    previewIframe.addEventListener("load", bindIframeEscape);
+                    bindIframeEscape();
+                }
             }
             const iframe = previewModal.querySelector("iframe");
             if (iframe) {
@@ -13657,6 +13673,321 @@ class Ecard {
         }
         else if (input) {
             input.setAttribute("aria-label", labelText);
+        }
+    }
+}
+
+;// ./node_modules/@4site/engrid-scripts/dist/ecard-preview.js
+/**
+ * EcardPreview delegates the Engaging Networks ecard preview modal to the
+ * parent window when an ecard page is embedded inside another ENgrid page.
+ *
+ * Embedded ecard page (child):
+ * - Detects it is embedded (data-engrid-embedded-ecard / data-engrid-embedded)
+ *   and performs a handshake with the parent to find out if it is an ENgrid
+ *   page capable of displaying the preview modal.
+ * - If the parent is capable, the preview button is kept visible and, when
+ *   clicked, the preview URL built by EN is posted to the parent instead of
+ *   opening the modal inside the iframe.
+ * - If the parent does not respond, the preview button is hidden.
+ *
+ * Host page (parent):
+ * - Listens for the handshake and the preview URL, builds a modal following
+ *   the exact structure EN uses for their preview, and wires the close
+ *   button and Escape key to close it.
+ *
+ * Both the delegated modal and EN's native modal on standalone ecard pages
+ * are widened to fit the preview content when it scrolls horizontally and
+ * the viewport is wide enough to display it all.
+ */
+
+class EcardPreview {
+    constructor() {
+        this.logger = new EngridLogger("Ecard Preview", "#4B2682", "#FFFFFF", "🖼️");
+        this.previewCapable = false;
+        this.handshakeAttempts = 0;
+        this.handshakeTimer = null;
+        this.delegatedModal = null;
+        this.requestingIframe = null;
+        if (this.isEmbeddedEcardPage()) {
+            this.setupEmbeddedEcardPage();
+        }
+        else if (engrid_ENGrid.getPageType() === "ECARD" && !this.inIframe()) {
+            // Standalone ecard page - enhance EN's native preview modal
+            this.setupNativePreviewEnhancements();
+        }
+        // The parent-side listener runs on every ENgrid page so any embedded
+        // ENgrid ecard iframe (EmbeddedEcard or a generic embed) is supported
+        this.setupParentPage();
+    }
+    isEmbeddedEcardPage() {
+        return (engrid_ENGrid.getPageType() === "ECARD" &&
+            this.inIframe() &&
+            (engrid_ENGrid.hasBodyData("embedded-ecard") || engrid_ENGrid.hasBodyData("embedded")));
+    }
+    setupEmbeddedEcardPage() {
+        const previewButton = document.querySelector(".en__ecarditems__showprev");
+        if (!previewButton)
+            return;
+        // Hide the button until the parent confirms it can display the preview
+        previewButton.style.display = "none";
+        window.addEventListener("message", (e) => {
+            var _a;
+            if (e.source !== window.parent ||
+                e.origin !== location.origin ||
+                !((_a = e.data) === null || _a === void 0 ? void 0 : _a.action))
+                return;
+            if (e.data.action === "ecard_preview_available") {
+                this.previewCapable = true;
+                if (this.handshakeTimer) {
+                    clearInterval(this.handshakeTimer);
+                    this.handshakeTimer = null;
+                }
+                previewButton.style.display = "";
+                // Keeps the native modal inside the iframe hidden when EN shows it
+                document.body.classList.add("engrid-ecard-preview-delegated");
+                this.logger.log("Parent page can display the ecard preview - delegating");
+            }
+        });
+        // Handshake with the parent, retried to cover the parent still loading
+        this.sendHandshake();
+        this.handshakeTimer = setInterval(() => this.sendHandshake(), 250);
+        // When the preview button is clicked, EN's own handler builds the preview
+        // iframe src (with the current form values) and shows the modal. We watch
+        // for that, grab the URL, hide the local modal and delegate to the parent.
+        const previewModal = document.querySelector(".en__ecarditems__preview");
+        if (!previewModal)
+            return;
+        const observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                if (mutation.type === "attributes" &&
+                    mutation.attributeName === "class" &&
+                    this.previewCapable &&
+                    previewModal.classList.contains("preview--show")) {
+                    const iframe = previewModal.querySelector("iframe");
+                    const previewUrl = iframe === null || iframe === void 0 ? void 0 : iframe.getAttribute("src");
+                    previewModal.classList.remove("preview--show");
+                    if (previewUrl) {
+                        this.logger.log("Delegating ecard preview to parent", previewUrl);
+                        window.parent.postMessage({ action: "show_ecard_preview", previewUrl }, location.origin);
+                    }
+                }
+            });
+        });
+        observer.observe(previewModal, {
+            attributes: true,
+            attributeFilter: ["class"],
+        });
+    }
+    /**
+     * Enhances EN's native preview modal on standalone (non-embedded) ecard
+     * pages: when the modal opens, widen it to fit the preview content if the
+     * viewport is wide enough.
+     */
+    setupNativePreviewEnhancements() {
+        const previewModal = document.querySelector(".en__ecarditems__preview");
+        if (!previewModal)
+            return;
+        const observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                if (mutation.type === "attributes" &&
+                    mutation.attributeName === "class" &&
+                    previewModal.classList.contains("preview--show")) {
+                    this.fitPreviewToContent(previewModal);
+                }
+            });
+        });
+        observer.observe(previewModal, {
+            attributes: true,
+            attributeFilter: ["class"],
+        });
+    }
+    sendHandshake() {
+        window.parent.postMessage({ action: "ecard_preview_handshake" }, location.origin);
+        this.handshakeAttempts++;
+        if (this.handshakeAttempts >= 8 && this.handshakeTimer) {
+            clearInterval(this.handshakeTimer);
+            this.handshakeTimer = null;
+            this.logger.log("Parent page cannot display the ecard preview - hiding the preview button");
+        }
+    }
+    setupParentPage() {
+        window.addEventListener("resize", () => {
+            document
+                .querySelectorAll(".en__ecarditems__preview.preview--show")
+                .forEach((modal) => this.fitPreviewToContent(modal));
+        });
+        window.addEventListener("message", (e) => {
+            var _a;
+            if (e.origin !== location.origin || !((_a = e.data) === null || _a === void 0 ? void 0 : _a.action))
+                return;
+            const iframe = this.getIframeBySource(e.source);
+            if (!iframe)
+                return;
+            switch (e.data.action) {
+                case "ecard_preview_handshake":
+                    this.logger.log("Received ecard preview handshake from iframe");
+                    e.source.postMessage({ action: "ecard_preview_available" }, e.origin);
+                    break;
+                case "show_ecard_preview":
+                    this.showDelegatedPreview(e.data.previewUrl, iframe);
+                    break;
+            }
+        });
+        document.addEventListener("keydown", (e) => {
+            this.handlePreviewEscape(e);
+        });
+    }
+    handlePreviewEscape(e) {
+        if (e.key === "Escape" && this.delegatedModal) {
+            this.closeDelegatedPreview();
+        }
+    }
+    showDelegatedPreview(previewUrl, iframe) {
+        var _a, _b, _c;
+        if (!previewUrl)
+            return;
+        // Only same-origin EN preview URLs are displayed in the modal
+        try {
+            if (new URL(previewUrl, location.origin).origin !== location.origin) {
+                this.logger.log("Ignoring cross-origin ecard preview URL", previewUrl);
+                return;
+            }
+        }
+        catch (e) {
+            return;
+        }
+        this.requestingIframe = iframe;
+        if (this.delegatedModal) {
+            (_a = this.delegatedModal
+                .querySelector("iframe")) === null || _a === void 0 ? void 0 : _a.setAttribute("src", previewUrl);
+            this.fitPreviewToContent(this.delegatedModal);
+            return;
+        }
+        // Follows the exact structure EN uses for their ecard preview modal so
+        // enPage.css styles apply on the parent page
+        const modal = document.createElement("div");
+        modal.classList.add("en__ecarditems__preview", "preview--show");
+        modal.setAttribute("role", "dialog");
+        modal.setAttribute("aria-modal", "true");
+        modal.setAttribute("aria-label", "Ecard Preview Modal");
+        modal.id = "ecard-preview";
+        modal.innerHTML = `
+      <div class="en__ecarditems__prevbg"></div>
+      <div class="en__ecarditems__prevwrap">
+        <iframe frameborder="0" scrolling="yes" title="Ecard Preview Frame"></iframe>
+        <button type="button" class="en__ecarditems__prevclose" role="button" aria-label="Close Preview">✕</button>
+      </div>`;
+        const previewIframe = modal.querySelector("iframe");
+        const handleEscape = (e) => this.handlePreviewEscape(e);
+        const bindIframeEscape = () => {
+            var _a;
+            try {
+                (_a = previewIframe.contentDocument) === null || _a === void 0 ? void 0 : _a.addEventListener("keydown", handleEscape);
+            }
+            catch (e) {
+                // Cross-origin previews cannot expose their keyboard events.
+            }
+        };
+        previewIframe.addEventListener("load", bindIframeEscape);
+        previewIframe.src = previewUrl;
+        (_b = modal
+            .querySelector(".en__ecarditems__prevclose")) === null || _b === void 0 ? void 0 : _b.addEventListener("click", () => this.closeDelegatedPreview());
+        document.body.appendChild(modal);
+        this.delegatedModal = modal;
+        bindIframeEscape();
+        // Center like EN does and widen to fit the preview content once the
+        // iframe has loaded
+        this.fitPreviewToContent(modal);
+        A11y.inertPage(true, modal);
+        (_c = modal.querySelector(".en__ecarditems__prevclose")) === null || _c === void 0 ? void 0 : _c.focus();
+        this.logger.log("Displaying delegated ecard preview", previewUrl);
+    }
+    /**
+     * Centers the preview wrap like EN does (negative margins equal to half its
+     * dimensions) and flags overflow when the viewport is smaller than the wrap.
+     */
+    centerPreviewWrap(modal) {
+        const wrap = modal.querySelector(".en__ecarditems__prevwrap");
+        if (!wrap)
+            return;
+        wrap.style.marginLeft = `-${wrap.offsetWidth / 2}px`;
+        wrap.style.marginTop = `-${wrap.offsetHeight / 2}px`;
+        modal.classList.toggle("overflow--width", wrap.offsetWidth >= window.innerWidth);
+        modal.classList.toggle("overflow--height", wrap.offsetHeight > window.innerHeight);
+    }
+    /**
+     * Widens the preview modal to fit the ecard content when the preview iframe
+     * scrolls horizontally and the viewport is wide enough to display it all.
+     * The preview URL is same-origin, so the iframe content can be measured.
+     */
+    fitPreviewToContent(modal) {
+        var _a;
+        this.centerPreviewWrap(modal);
+        const wrap = modal.querySelector(".en__ecarditems__prevwrap");
+        const iframe = modal.querySelector("iframe");
+        if (!wrap || !iframe)
+            return;
+        const widen = () => {
+            var _a, _b, _c, _d;
+            let contentWidth = 0;
+            try {
+                const iframeDoc = iframe.contentDocument;
+                if (iframeDoc) {
+                    contentWidth = Math.max((_b = (_a = iframeDoc.documentElement) === null || _a === void 0 ? void 0 : _a.scrollWidth) !== null && _b !== void 0 ? _b : 0, (_d = (_c = iframeDoc.body) === null || _c === void 0 ? void 0 : _c.scrollWidth) !== null && _d !== void 0 ? _d : 0);
+                }
+            }
+            catch (e) {
+                // Cross-origin preview - cannot measure the content
+                return;
+            }
+            if (!contentWidth)
+                return;
+            // Never exceed 90vw (matches the CSS max-width on the wrap) and leave
+            // a gutter so the modal never touches the viewport edges
+            const maxWidth = Math.min(window.innerWidth * 0.9, window.innerWidth - 32);
+            const targetWidth = Math.min(contentWidth, maxWidth);
+            if (targetWidth > wrap.offsetWidth) {
+                wrap.style.width = `${targetWidth}px`;
+                this.logger.log(`Widened ecard preview to fit content (${contentWidth}px content, ${targetWidth}px applied)`);
+            }
+            this.centerPreviewWrap(modal);
+        };
+        try {
+            if (((_a = iframe.contentDocument) === null || _a === void 0 ? void 0 : _a.readyState) === "complete") {
+                widen();
+            }
+        }
+        catch (e) { }
+        if (!iframe.dataset.engridFitBound) {
+            iframe.dataset.engridFitBound = "true";
+            iframe.addEventListener("load", widen);
+        }
+    }
+    closeDelegatedPreview() {
+        var _a, _b, _c;
+        (_a = this.delegatedModal) === null || _a === void 0 ? void 0 : _a.remove();
+        this.delegatedModal = null;
+        A11y.inertPage(false);
+        // Return focus to the preview button inside the requesting iframe.
+        // Same-origin is guaranteed by the origin checks on the messages.
+        try {
+            const iframeDoc = (_b = this.requestingIframe) === null || _b === void 0 ? void 0 : _b.contentDocument;
+            (_c = iframeDoc === null || iframeDoc === void 0 ? void 0 : iframeDoc.querySelector(".en__ecarditems__showprev")) === null || _c === void 0 ? void 0 : _c.focus();
+        }
+        catch (e) { }
+        this.requestingIframe = null;
+        this.logger.log("Closed delegated ecard preview");
+    }
+    getIframeBySource(source) {
+        return (Array.from(document.querySelectorAll("iframe")).find((iframe) => iframe.contentWindow === source) || null);
+    }
+    inIframe() {
+        try {
+            return window.self !== window.top;
+        }
+        catch (e) {
+            return true;
         }
     }
 }
@@ -19213,7 +19544,14 @@ class RememberMe {
         }
     }
     setFieldValue(field, value, overwrite = false) {
-        value = decodeURIComponent(value || "");
+        // No remembered value for this field: leave it alone. Turning undefined
+        // into "" here used to select the empty "Please select" option on
+        // <select> fields, wiping values EN pre-filled (e.g. supporter.region on
+        // a chained after-action donation page) for every visitor with no
+        // RememberMe data.
+        if (!field || value === undefined || value === null)
+            return;
+        value = decodeURIComponent(value);
         if (field && value !== undefined) {
             if ("type" in field) {
                 switch (field.type) {
@@ -19305,7 +19643,12 @@ class RememberMe {
                     }
                 }
                 else if (field.tagName === "SELECT") {
-                    this.setFieldValue(field, this.fieldData[this.fieldNames[i]], true);
+                    // A select always has a value (its first option), so a remembered
+                    // value needs overwrite=true to win over the default. A remembered
+                    // empty value must not wipe a pre-filled select, though, unless we
+                    // are clearing (clearFields() calls writeFields(true)).
+                    const rememberedValue = this.fieldData[this.fieldNames[i]];
+                    this.setFieldValue(field, rememberedValue, overwrite || rememberedValue !== "");
                 }
             }
         }
@@ -27455,10 +27798,11 @@ class PreferredPaymentMethod {
 }
 
 ;// ./node_modules/@4site/engrid-scripts/dist/version.js
-const AppVersion = "0.28.7";
+const AppVersion = "0.28.9";
 
 ;// ./node_modules/@4site/engrid-scripts/dist/index.js
  // Runs first so it can change the DOM markup before any markup dependent code fires
+
 
 
 
@@ -27559,11 +27903,237 @@ const AppVersion = "0.28.7";
 // Version
 
 
+;// ./node_modules/@babel/runtime/helpers/esm/typeof.js
+function _typeof(o) {
+  "@babel/helpers - typeof";
+
+  return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) {
+    return typeof o;
+  } : function (o) {
+    return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o;
+  }, _typeof(o);
+}
+
+;// ./node_modules/@babel/runtime/helpers/esm/toPrimitive.js
+
+function toPrimitive(t, r) {
+  if ("object" != _typeof(t) || !t) return t;
+  var e = t[Symbol.toPrimitive];
+  if (void 0 !== e) {
+    var i = e.call(t, r || "default");
+    if ("object" != _typeof(i)) return i;
+    throw new TypeError("@@toPrimitive must return a primitive value.");
+  }
+  return ("string" === r ? String : Number)(t);
+}
+
+;// ./node_modules/@babel/runtime/helpers/esm/toPropertyKey.js
+
+
+function toPropertyKey(t) {
+  var i = toPrimitive(t, "string");
+  return "symbol" == _typeof(i) ? i : i + "";
+}
+
+;// ./node_modules/@babel/runtime/helpers/esm/defineProperty.js
+
+function _defineProperty(e, r, t) {
+  return (r = toPropertyKey(r)) in e ? Object.defineProperty(e, r, {
+    value: t,
+    enumerable: !0,
+    configurable: !0,
+    writable: !0
+  }) : e[r] = t, e;
+}
+
+;// ./src/scripts/slideshow.ts
+
+
+class Slideshow {
+  constructor(container) {
+    this.container = container;
+    _defineProperty(this, "logger", new EngridLogger("Slideshow", "#FFFFFF", "#4d9068", "🖼️"));
+    _defineProperty(this, "slides", void 0);
+    _defineProperty(this, "currentIndex", -1);
+    _defineProperty(this, "timer", null);
+    _defineProperty(this, "previewing", false);
+    this.slides = Array.from(container.children).filter(child => child.tagName === "DIV");
+    if (!this.slides.length) {
+      this.logger.log("No slides found", container);
+      return;
+    }
+    this.container.classList.add("engrid-slideshow--ready");
+    this.slides.forEach(slide => {
+      slide.classList.add("engrid-slideshow__slide");
+    });
+    const initialSlide = this.findAmountSlide(this.getSelectedAmount());
+    this.goTo(initialSlide === null ? 0 : initialSlide);
+    if (initialSlide === null) this.startRotation();
+    this.addEventListeners();
+  }
+  addEventListeners() {
+    const handleAmountChange = event => {
+      const fieldName = event.target?.name;
+      if (fieldName === "transaction.donationAmt" || fieldName === "transaction.donationAmt.other") {
+        this.syncToSelectedAmount();
+      }
+    };
+    document.addEventListener("change", handleAmountChange);
+    document.addEventListener("input", handleAmountChange);
+    document.querySelectorAll('input[name="transaction.donationAmt"]').forEach(input => {
+      const button = input.closest(".en__field__item");
+      if (!button) return;
+      button.addEventListener("mouseenter", () => {
+        const matchingSlide = this.findAmountSlide(engrid_ENGrid.cleanAmount(input.value));
+        if (matchingSlide === null) return;
+        this.previewing = true;
+        this.stopRotation();
+        this.goTo(matchingSlide);
+      });
+      button.addEventListener("mouseleave", () => {
+        if (!this.previewing) return;
+        this.previewing = false;
+        this.syncToSelectedAmount();
+      });
+    });
+  }
+  syncToSelectedAmount() {
+    const matchingSlide = this.findAmountSlide(this.getSelectedAmount());
+    if (matchingSlide === null) {
+      this.startRotation();
+      return;
+    }
+    this.stopRotation();
+    this.goTo(matchingSlide);
+  }
+  startRotation() {
+    if (this.timer || this.slides.length < 2) return;
+    this.timer = setInterval(() => {
+      this.goTo((this.currentIndex + 1) % this.slides.length);
+    }, 5000);
+  }
+  stopRotation() {
+    if (!this.timer) return;
+    clearInterval(this.timer);
+    this.timer = null;
+  }
+  getSelectedAmount() {
+    const selected = document.querySelector('input[name="transaction.donationAmt"]:checked');
+    if (!selected) return null;
+    const amount = engrid_ENGrid.cleanAmount(selected.value);
+    if (amount > 0) return amount;
+    const other = document.querySelector('input[name="transaction.donationAmt.other"]');
+    const otherAmount = other ? engrid_ENGrid.cleanAmount(other.value) : 0;
+    return otherAmount > 0 ? otherAmount : null;
+  }
+  findAmountSlide(amount) {
+    if (amount === null) return null;
+    const index = this.slides.findIndex(slide => slide.hasAttribute("data-amount") && engrid_ENGrid.cleanAmount(slide.dataset.amount || "") === amount);
+    return index === -1 ? null : index;
+  }
+  goTo(index) {
+    if (index === this.currentIndex) return;
+    this.slides.forEach(slide => {
+      slide.classList.remove("engrid-slideshow__slide--leaving");
+    });
+    if (this.currentIndex >= 0) {
+      this.slides[this.currentIndex].classList.add("engrid-slideshow__slide--leaving");
+    }
+    this.currentIndex = index;
+    this.slides.forEach((slide, slideIndex) => {
+      const isActive = slideIndex === index;
+      slide.classList.toggle("engrid-slideshow__slide--active", isActive);
+      slide.setAttribute("aria-hidden", String(!isActive));
+    });
+  }
+}
+;// ./src/scripts/legacy_social_share.ts
+class LegacySocialShare {
+  constructor(options = {}) {
+    this.options = options;
+    document.querySelectorAll(".sb_social_button_facebook").forEach(button => {
+      button.addEventListener("click", event => {
+        event.preventDefault();
+        const shareUrl = encodeURIComponent(this.getShareUrl());
+        this.openPopup(`https://facebook.com/sharer.php?u=${shareUrl}`);
+      });
+    });
+    document.querySelectorAll(".sb_social_button_twitter").forEach(button => {
+      button.addEventListener("click", event => {
+        event.preventDefault();
+        const message = encodeURIComponent(this.options.twitterMessage || document.title);
+        const shareUrl = encodeURIComponent(this.getShareUrl());
+        this.openPopup(`https://twitter.com/intent/tweet?text=${message}&url=${shareUrl}`);
+      });
+    });
+    document.querySelectorAll(".sb_social_button_email").forEach(button => {
+      button.addEventListener("click", () => {
+        const subject = encodeURIComponent(this.options.emailSubject || document.title);
+        const message = encodeURIComponent(this.options.emailMessage || "");
+        const shareUrl = encodeURIComponent(this.getShareUrl());
+        button.setAttribute("href", `mailto:?subject=${subject}&body=${message}%0D%0A%0D%0A${shareUrl}`);
+      });
+    });
+  }
+  getShareUrl() {
+    const url = new URL(window.location.href);
+    url.pathname = url.pathname.replace(/\/donate\/\d+\/?$/, "/donate/1");
+    return url.href;
+  }
+  openPopup(path) {
+    const popup = window.open(path, "sbSocialPopup", "width=550,height=420");
+    popup?.focus();
+  }
+}
 ;// ./src/scripts/main.js
+
+
 const customScript = function (App) {
   console.log("ENGrid client scripts are executing");
   // Add your client scripts here
-
+  document.querySelectorAll(".engrid-slideshow").forEach(slideshow => {
+    new Slideshow(slideshow);
+  });
+  new LegacySocialShare();
+  const giveBySelectWrapper = document.querySelector(".give-by-select-wrapper");
+  if (giveBySelectWrapper) {
+    // Find apple-pay class, set data-src to the apple pay image, and add the class "apple-pay-image"
+    const applePayElement = giveBySelectWrapper.querySelector("img.apple-pay");
+    if (applePayElement) {
+      applePayElement.setAttribute("src", "https://bd6ca9cefa6fb6e0adf1-c2f9aa1adb9f60a775f60074e4c86031.ssl.cf5.rackcdn.com/20014/payment-type-applepay.svg?v=1794326459000");
+    }
+    const gPayElement = giveBySelectWrapper.querySelector("img.google-pay");
+    if (gPayElement) {
+      gPayElement.setAttribute("src", "https://bd6ca9cefa6fb6e0adf1-c2f9aa1adb9f60a775f60074e4c86031.ssl.cf5.rackcdn.com/20014/payment-type-gpay.svg?v=1794326459000");
+    }
+    const payPalWhiteElement = giveBySelectWrapper.querySelectorAll("img.paypal-w");
+    for (const element of payPalWhiteElement) {
+      element.setAttribute("src", "https://bd6ca9cefa6fb6e0adf1-c2f9aa1adb9f60a775f60074e4c86031.ssl.cf5.rackcdn.com/20014/payment-type-paypal-w.svg?v=1794326459000");
+    }
+    const payPalBlackElement = giveBySelectWrapper.querySelectorAll("img.paypal-b");
+    for (const element of payPalBlackElement) {
+      element.setAttribute("src", "https://bd6ca9cefa6fb6e0adf1-c2f9aa1adb9f60a775f60074e4c86031.ssl.cf5.rackcdn.com/20014/payment-type-paypal-b.svg?v=1794326459000");
+    }
+    const dafPayElement = giveBySelectWrapper.querySelector("img.daf");
+    if (dafPayElement) {
+      dafPayElement.setAttribute("src", "https://bd6ca9cefa6fb6e0adf1-c2f9aa1adb9f60a775f60074e4c86031.ssl.cf5.rackcdn.com/20014/payment-type-daf.svg?v=1794326459000");
+    }
+    const bankElement = giveBySelectWrapper.querySelector("img.bank");
+    if (bankElement) {
+      bankElement.setAttribute("src", "https://aaf18515da0e792f78-c27fdabe952dfc357fe25ebf5c8897ee.ssl.cf5.rackcdn.com/2184/payment-type-bank.svg?v=1794326459000");
+    }
+    const venmoElement = giveBySelectWrapper.querySelector("img.venmo");
+    if (venmoElement) {
+      venmoElement.setAttribute("src", "https://bd6ca9cefa6fb6e0adf1-c2f9aa1adb9f60a775f60074e4c86031.ssl.cf5.rackcdn.com/20014/payment-type-venmo.svg?v=1794326459000");
+    }
+    const cardsElement = giveBySelectWrapper.querySelector("img.credit-card-logos");
+    if (cardsElement) {
+      cardsElement.setAttribute("src", "https://bd6ca9cefa6fb6e0adf1-c2f9aa1adb9f60a775f60074e4c86031.ssl.cf5.rackcdn.com/20014/payment-type-cards.png?v=1794326459000");
+    }
+  }
+  if (App.isThankYouPage()) {
+    App.setBodyData("thank-you", "true");
+  }
   App.setBodyData("client-js-loading", "finished");
 };
 ;// ./src/index.ts
@@ -27587,6 +28157,20 @@ const options = {
   MaxAmount: 999999,
   MinAmountMessage: "Minimum gift amount is $5",
   MaxAmountMessage: "Maximum gift amount is $999,999",
+  // TidyContact: {
+  //   phone_enable: true,
+  //   address_enable: true,
+  //   cid: "43e5862a-3d73-4ac4-9c0c-b285a0e06e3e",
+  //   us_zip_divider: "-",
+  //   record_field: "supporter.NOT_TAGGED_4",
+  //   date_field: "supporter.NOT_TAGGED_2",
+  //   status_field: "supporter.NOT_TAGGED_3",
+  //   countries: ["us"],
+  //   phone_preferred_countries: ["us"],
+  //   phone_record_field: "supporter.NOT_TAGGED_7",
+  //   phone_date_field: "supporter.NOT_TAGGED_6",
+  //   phone_status_field: "supporter.NOT_TAGGED_5",
+  // },
   Debug: App.getUrlParameter("debug") == "true" ? true : false,
   onLoad: () => customScript(App),
   onResize: () => {}
