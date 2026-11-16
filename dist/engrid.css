@@ -19,7 +19,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Monday, November 16, 2026 @ 12:02:34 ET
+ *  Date: Monday, November 16, 2026 @ 16:08:41 ET
  *  By: nick
  *  ENGrid styles: v0.28.9
  *  ENGrid scripts: v0.28.9
@@ -8353,6 +8353,9 @@ body[data-engrid-debug]:before{
 [data-engrid-theme=aspca][data-engrid-subtheme=replica] .en__component--advrow .body-title:has(.banner-image){
   padding:0;
 }
+[data-engrid-theme=aspca][data-engrid-subtheme=replica] .en__component--advrow .body-title:has(.breadcrumbs) h1{
+  margin-top:0;
+}
 [data-engrid-theme=aspca][data-engrid-subtheme=replica] .en__component--advrow .body-title>*{
   grid-column:rbc-start /  rbc-end;
 }
@@ -8368,6 +8371,68 @@ body[data-engrid-debug]:before{
 }
 [data-engrid-theme=aspca][data-engrid-subtheme=replica] .en__component--advrow .body-title h1,[data-engrid-theme=aspca][data-engrid-subtheme=replica] .en__component--advrow .body-title h2,[data-engrid-theme=aspca][data-engrid-subtheme=replica] .en__component--advrow .body-title h3,[data-engrid-theme=aspca][data-engrid-subtheme=replica] .en__component--advrow .body-title h4,[data-engrid-theme=aspca][data-engrid-subtheme=replica] .en__component--advrow .body-title h5,[data-engrid-theme=aspca][data-engrid-subtheme=replica] .en__component--advrow .body-title h6{
   color:inherit;
+}
+[data-engrid-theme=aspca][data-engrid-subtheme=replica] .breadcrumbs p{
+  --a_font-family:var(--bold_font-family);
+  --a_color:var(--color_white);
+  --a_text-decoration:none;
+  font-family:var(--bold_font-family);
+  font-size:14px;
+  font-weight:800;
+  opacity:.8;
+  text-transform:uppercase;
+}
+[data-engrid-theme=aspca][data-engrid-subtheme=replica] .blue-box{
+  background-color:var(--color_navy);
+  border-radius:10px;
+  color:var(--color_white);
+  font-family:var(--bold_font-family);
+  font-weight:700;
+  padding:20px;
+}
+[data-engrid-theme=aspca][data-engrid-subtheme=replica] .blue-box.caret-bottom{
+  position:relative;
+}
+[data-engrid-theme=aspca][data-engrid-subtheme=replica] .blue-box.caret-bottom:after{
+  border-color:var(--color_navy) #0000 #0000 #0000;
+  border-style:solid;
+  border-width:10px;
+  bottom:-20px;
+  content:"";
+  left:50%;
+  position:absolute;
+  transform:translateX(-50%);
+}
+[data-engrid-theme=aspca][data-engrid-subtheme=replica] .orange-box{
+  background-color:var(--color_orange);
+  border-radius:10px;
+  color:var(--color_white);
+  font-family:var(--bold_font-family);
+  font-weight:700;
+  padding:20px;
+}
+[data-engrid-theme=aspca][data-engrid-subtheme=replica] .orange-box.caret-top{
+  position:relative;
+}
+[data-engrid-theme=aspca][data-engrid-subtheme=replica] .orange-box.caret-top:before{
+  border-color:#0000 #0000 var(--color_orange) #0000;
+  border-style:solid;
+  border-width:10px;
+  content:"";
+  left:50%;
+  position:absolute;
+  top:-20px;
+  transform:translateX(-50%);
+}
+[data-engrid-theme=aspca][data-engrid-subtheme=replica] .blue-box+.orange-box{
+  border-top-left-radius:0;
+  border-top-right-radius:0;
+  margin-top:0;
+}
+[data-engrid-theme=aspca][data-engrid-subtheme=replica] .blue-box:has(+.orange-box){
+  border-bottom-left-radius:0;
+  border-bottom-right-radius:0;
+  margin-bottom:0;
 }
 [data-engrid-theme=aspca][data-engrid-subtheme=replica] .en__field--phoneNumber2 .en__field__element:after{
   content:"By providing my number, I agree that ASPCA and its agents may contact me by phone call regarding ASPCA programs, events and membership.";
