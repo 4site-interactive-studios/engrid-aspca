@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Thursday, November 12, 2026 @ 17:16:10 ET
+ *  Date: Monday, November 16, 2026 @ 10:44:51 ET
  *  By: nick
  *  ENGrid styles: v0.28.9
  *  ENGrid scripts: v0.28.9
@@ -28047,46 +28047,7 @@ class Slideshow {
     });
   }
 }
-;// ./src/scripts/legacy_social_share.ts
-class LegacySocialShare {
-  constructor(options = {}) {
-    this.options = options;
-    document.querySelectorAll(".sb_social_button_facebook").forEach(button => {
-      button.addEventListener("click", event => {
-        event.preventDefault();
-        const shareUrl = encodeURIComponent(this.getShareUrl());
-        this.openPopup(`https://facebook.com/sharer.php?u=${shareUrl}`);
-      });
-    });
-    document.querySelectorAll(".sb_social_button_twitter").forEach(button => {
-      button.addEventListener("click", event => {
-        event.preventDefault();
-        const message = encodeURIComponent(this.options.twitterMessage || document.title);
-        const shareUrl = encodeURIComponent(this.getShareUrl());
-        this.openPopup(`https://twitter.com/intent/tweet?text=${message}&url=${shareUrl}`);
-      });
-    });
-    document.querySelectorAll(".sb_social_button_email").forEach(button => {
-      button.addEventListener("click", () => {
-        const subject = encodeURIComponent(this.options.emailSubject || document.title);
-        const message = encodeURIComponent(this.options.emailMessage || "");
-        const shareUrl = encodeURIComponent(this.getShareUrl());
-        button.setAttribute("href", `mailto:?subject=${subject}&body=${message}%0D%0A%0D%0A${shareUrl}`);
-      });
-    });
-  }
-  getShareUrl() {
-    const url = new URL(window.location.href);
-    url.pathname = url.pathname.replace(/\/donate\/\d+\/?$/, "/donate/1");
-    return url.href;
-  }
-  openPopup(path) {
-    const popup = window.open(path, "sbSocialPopup", "width=550,height=420");
-    popup?.focus();
-  }
-}
 ;// ./src/scripts/main.js
-
 
 const customScript = function (App) {
   console.log("ENGrid client scripts are executing");
@@ -28094,7 +28055,6 @@ const customScript = function (App) {
   document.querySelectorAll(".engrid-slideshow").forEach(slideshow => {
     new Slideshow(slideshow);
   });
-  new LegacySocialShare();
   const giveBySelectWrapper = document.querySelector(".give-by-select-wrapper");
   if (giveBySelectWrapper) {
     // Find apple-pay class, set data-src to the apple pay image, and add the class "apple-pay-image"
@@ -28136,9 +28096,80 @@ const customScript = function (App) {
   }
   App.setBodyData("client-js-loading", "finished");
 };
+;// ./src/scripts/legacy_social_share.ts
+class LegacySocialShare {
+  constructor(options = {}) {
+    this.options = options;
+    document.querySelectorAll(".sb_social_button_facebook").forEach(button => {
+      button.addEventListener("click", event => {
+        event.preventDefault();
+        const shareUrl = encodeURIComponent(this.getShareUrl());
+        this.openPopup(`https://facebook.com/sharer.php?u=${shareUrl}`);
+      });
+    });
+    document.querySelectorAll(".sb_social_button_twitter").forEach(button => {
+      button.addEventListener("click", event => {
+        event.preventDefault();
+        const message = encodeURIComponent(this.options.twitterMessage || document.title);
+        const shareUrl = encodeURIComponent(this.getShareUrl());
+        this.openPopup(`https://twitter.com/intent/tweet?text=${message}&url=${shareUrl}`);
+      });
+    });
+    document.querySelectorAll(".sb_social_button_email").forEach(button => {
+      button.addEventListener("click", () => {
+        const subject = encodeURIComponent(this.options.emailSubject || document.title);
+        const message = encodeURIComponent(this.options.emailMessage || "");
+        const shareUrl = encodeURIComponent(this.getShareUrl());
+        button.setAttribute("href", `mailto:?subject=${subject}&body=${message}%0D%0A%0D%0A${shareUrl}`);
+      });
+    });
+  }
+  getShareUrl() {
+    const url = new URL(window.location.href);
+    url.pathname = url.pathname.replace(/\/donate\/\d+\/?$/, "/donate/1");
+    return url.href;
+  }
+  openPopup(path) {
+    const popup = window.open(path, "sbSocialPopup", "width=550,height=420");
+    popup?.focus();
+  }
+}
+;// ./src/scripts/inform_method.ts
+
+class InformMethod {
+  constructor(app) {
+    _defineProperty(this, "app", void 0);
+    _defineProperty(this, "radios", void 0);
+    this.app = app;
+    this.radios = document.querySelectorAll('input[name="supporter.questions.36584"]');
+    console.log("InformMethod initialized with radios:", this.radios);
+    if (!this.radios.length) return;
+    this.radios.forEach(radio => {
+      radio.addEventListener("change", () => this.sync());
+    });
+    this.sync();
+  }
+  sync() {
+    const selected = Array.from(this.radios).find(radio => radio.checked);
+    if (!selected || selected.value !== "ecard" && selected.value !== "mail") {
+      return;
+    }
+    const method = selected.value;
+    this.app.setBodyData("inmem-method", method);
+    const checkbox = document.querySelector("#en__field_embedded-ecard");
+    const shouldBeChecked = method === "ecard";
+    if (!checkbox || checkbox.checked === shouldBeChecked) return;
+    checkbox.checked = shouldBeChecked;
+    checkbox.dispatchEvent(new Event("change", {
+      bubbles: true
+    }));
+  }
+}
 ;// ./src/index.ts
  // Uses ENGrid via NPM
 // import { Options, App } from "../../engrid/packages/scripts"; // Uses ENGrid via Visual Studio Workspace
+
+
 
 
 
@@ -28157,6 +28188,9 @@ const options = {
   MaxAmount: 999999,
   MinAmountMessage: "Minimum gift amount is $5",
   MaxAmountMessage: "Maximum gift amount is $999,999",
+  Placeholders: {
+    "#en__field_transaction_infpostcd": "Recipient ZIP"
+  },
   // TidyContact: {
   //   phone_enable: true,
   //   address_enable: true,
@@ -28172,7 +28206,11 @@ const options = {
   //   phone_status_field: "supporter.NOT_TAGGED_5",
   // },
   Debug: App.getUrlParameter("debug") == "true" ? true : false,
-  onLoad: () => customScript(App),
+  onLoad: () => {
+    customScript(App);
+    new LegacySocialShare();
+    new InformMethod(App);
+  },
   onResize: () => {}
 };
 new App(options);

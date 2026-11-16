@@ -145,6 +145,9 @@
           outline: 1px solid #ff0000;
         }
       }
+      .banner-image img {
+        max-height: 150px;
+      }
     }
 
     &[data-engrid-layout*="2col"] {
@@ -168,6 +171,16 @@
       --recurring-frequency__button_count: 1;
       --give-by-select__button_count: 1;
       --radio-to-buttons__button_count: 1;
+    }
+
+    &[data-engrid-embedded] {
+      #header,
+      #bottom-footer {
+        display: none;
+      }
+      &[data-engrid-embedded-ecard="true"] {
+        --h2_font-size: var(--h3_font-size);
+      }
     }
 
     #header {
@@ -371,6 +384,12 @@
     p .signature {
       width: 80px;
       height: 46px;
+      margin: unset;
+    }
+
+    p .signature-full {
+      width: 144px;
+      height: 42px;
       margin: unset;
     }
 
@@ -583,6 +602,20 @@
 
   .showif-apple {
     display: none;
+  }
+
+  &[data-engrid-inmem-method] {
+    .engrid--embedded-ecard-heading,
+    .en__field--embedded-ecard {
+      display: none;
+    }
+  }
+
+  &:not(#en__pagebuilder):not([data-engrid-debug]) {
+    &:not([data-engrid-inmem-method="ecard"]) .showif-inmem-ecard,
+    &:not([data-engrid-inmem-method="mail"]) .showif-inmem-mail {
+      display: none;
+    }
   }
 
   .hideif-apple {

@@ -1,5 +1,4 @@
 import { Slideshow } from "./slideshow";
-import { LegacySocialShare } from "./legacy_social_share";
 
 export const customScript = function (App) {
   console.log("ENGrid client scripts are executing");
@@ -7,7 +6,6 @@ export const customScript = function (App) {
   document.querySelectorAll(".engrid-slideshow").forEach((slideshow) => {
     new Slideshow(slideshow);
   });
-  new LegacySocialShare();
   const giveBySelectWrapper = document.querySelector(".give-by-select-wrapper");
   if (giveBySelectWrapper) {
     // Find apple-pay class, set data-src to the apple pay image, and add the class "apple-pay-image"

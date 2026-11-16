@@ -19,7 +19,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Thursday, November 12, 2026 @ 17:16:10 ET
+ *  Date: Monday, November 16, 2026 @ 10:44:51 ET
  *  By: nick
  *  ENGrid styles: v0.28.9
  *  ENGrid scripts: v0.28.9
@@ -8138,6 +8138,9 @@ body[data-engrid-debug]:before{
   display:block;
   outline:1px solid red;
 }
+[data-engrid-theme=aspca][data-engrid-subtheme=replica]#en__pagebuilder .banner-image img{
+  max-height:150px;
+}
 @media screen and (min-width:768px) and (max-width:1139px){
   [data-engrid-theme=aspca][data-engrid-subtheme=replica][data-engrid-layout*="2col"]{
     --recurring-frequency__button_count:1;
@@ -8217,6 +8220,12 @@ body[data-engrid-debug]:before{
     --give-by-select__button_count:1;
     --radio-to-buttons__button_count:1;
   }
+}
+[data-engrid-theme=aspca][data-engrid-subtheme=replica][data-engrid-embedded] #bottom-footer,[data-engrid-theme=aspca][data-engrid-subtheme=replica][data-engrid-embedded] #header{
+  display:none;
+}
+[data-engrid-theme=aspca][data-engrid-subtheme=replica][data-engrid-embedded][data-engrid-embedded-ecard=true]{
+  --h2_font-size:var(--h3_font-size);
 }
 [data-engrid-theme=aspca][data-engrid-subtheme=replica] #header{
   background-color:var(--color_white);
@@ -8380,6 +8389,11 @@ body[data-engrid-debug]:before{
   margin:unset;
   width:80px;
 }
+[data-engrid-theme=aspca][data-engrid-subtheme=replica] p .signature-full{
+  height:42px;
+  margin:unset;
+  width:144px;
+}
 [data-engrid-theme=aspca][data-engrid-subtheme=replica] .ty-page-socials{
   align-items:center;
   display:flex;
@@ -8508,7 +8522,7 @@ body[data-engrid-debug]:before{
 [data-engrid-theme=aspca] .en__field--giveBySelect label .apple-pay,[data-engrid-theme=aspca] .en__field--giveBySelect label .bank,[data-engrid-theme=aspca] .en__field--giveBySelect label .daf,[data-engrid-theme=aspca] .en__field--giveBySelect label .google-pay,[data-engrid-theme=aspca] .en__field--giveBySelect label .venmo{
   filter:invert(100%);
 }
-[data-engrid-theme=aspca] .showif-apple{
+[data-engrid-theme=aspca] .showif-apple,[data-engrid-theme=aspca]:not(#en__pagebuilder):not([data-engrid-debug]):not([data-engrid-inmem-method=ecard]) .showif-inmem-ecard,[data-engrid-theme=aspca]:not(#en__pagebuilder):not([data-engrid-debug]):not([data-engrid-inmem-method=mail]) .showif-inmem-mail,[data-engrid-theme=aspca][data-engrid-inmem-method] .en__field--embedded-ecard,[data-engrid-theme=aspca][data-engrid-inmem-method] .engrid--embedded-ecard-heading{
   display:none;
 }
 [data-engrid-theme=aspca] .hideif-apple{

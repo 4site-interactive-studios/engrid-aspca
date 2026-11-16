@@ -3,6 +3,8 @@ import { Options, App } from "@4site/engrid-scripts"; // Uses ENGrid via NPM
 
 import "./sass/main.scss";
 import { customScript } from "./scripts/main";
+import { LegacySocialShare } from "./scripts/legacy_social_share";
+import { InformMethod } from "./scripts/inform_method";
 
 const options: Options = {
   applePay: false,
@@ -19,6 +21,9 @@ const options: Options = {
   MaxAmount: 999999,
   MinAmountMessage: "Minimum gift amount is $5",
   MaxAmountMessage: "Maximum gift amount is $999,999",
+  Placeholders: {
+    "#en__field_transaction_infpostcd": "Recipient ZIP",
+  },
   // TidyContact: {
   //   phone_enable: true,
   //   address_enable: true,
@@ -34,7 +39,11 @@ const options: Options = {
   //   phone_status_field: "supporter.NOT_TAGGED_5",
   // },
   Debug: App.getUrlParameter("debug") == "true" ? true : false,
-  onLoad: () => customScript(App),
+  onLoad: () => {
+    customScript(App);
+    new LegacySocialShare();
+    new InformMethod(App);
+  },
   onResize: () => {},
 };
 new App(options);
