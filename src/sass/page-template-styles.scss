@@ -8,12 +8,13 @@
   --color_gray: #cfcfcf;
   --color_light-gray: #dddddd;
   --color_black: #363636;
+  --color_cream: #fff9e5;
   --error__color: #ed541d;
   --error__color_faded: #fef5f1;
 
   // TYPOGRAPHY DEFAULT
-  --default_font-family: "Helvetica Now", var(--native-fonts__sans-serif);
-  --bold_font-family: "Avant Garde", var(--default_font-family);
+  --default_font-family: "Inter", var(--native-fonts__sans-serif);
+  --bold_font-family: "Inter", var(--default_font-family);
   --default_color: var(--color_black);
   --default_font-size: var(--root_font-size);
   // --default_font-weight: initial;
@@ -22,8 +23,11 @@
   // TYPOGRAPHY H1
   --h1_font-family: var(--bold_font-family);
   --h1_font-size: 38px;
+  --h1_font-weight: 800;
   --h1_font-weight: 700;
   --h1_line-height: 1.2em;
+
+  --h2_font-weight: 800;
 
   // TYPOGRAPHY P
   --p_font-family: var(--default_font-family);
@@ -65,6 +69,7 @@
   // --input_box-shadow_hover: --input_box-shadow;
 
   // TYPOGRAPHY BUTTON
+  --button_font-weight: 800;
   --button_font-family: var(--bold_font-family);
   --button_color: var(--color_white);
   --button_font-size: 30px;
@@ -92,7 +97,7 @@
   // --recurring-frequency__button_count: 4;
   --donation-amount__button_count: 6;
   --donation-amount__button_font-size: 18px;
-  --donation-amount__button_font-weight: 400;
+  --donation-amount__button_font-weight: 800;
   --donation-amount__button_line-height: 27px;
   --donation-amount__button_padding: 18px 22px;
   --button_background-color: var(--color_gray);
@@ -116,27 +121,29 @@
     --engrid__body-main_background-color: var(--color_white);
     --engrid__body-main_padding: 20px;
     --engrid__body-top_padding: 40px;
-    --engrid__content-footer_background-color: var(--color_white);
-    --engrid__content-footer_padding: 40px;
-    --engrid__content-footer_margin: 30px 0;
+    --engrid__body-footer_background-color: var(--color_white);
+    --engrid__body-footer_padding: 40px;
+    --engrid__body-footer_margin: 30px 0;
     --engrid__body_box-shadow: unset;
     --recurring-frequency__button_count: 3;
+    .radio-to-buttons_count_2 {
+      --recurring-frequency__button_count: 2;
+      --radio-to-buttons__button_count: 2;
+    }
     &[data-engrid-thank-you="true"] {
       --engrid__body-main_padding: 45px;
       --engrid__page_background-color: var(--color_white);
-      --engrid__content-footer_margin: 30px 0 0 0;
-      --engrid__content-footer_background-color: #f5f5f5;
+      --engrid__body-footer_margin: 30px 0 0 0;
+      --engrid__body-footer_background-color: #f5f5f5;
     }
 
     &#en__pagebuilder {
       .page-alert,
-      .content-header,
       .body-header,
       .body-headerOutside,
       .body-bannerOverlay,
       .body-footerOutside,
       .content-footerSpacer,
-      .content-preFooter,
       .page-backgroundImageOverlay {
         display: none;
         &:has(.en__component) {
@@ -146,6 +153,7 @@
         }
       }
       .banner-image img {
+        width: auto;
         max-height: 150px;
       }
     }
@@ -155,7 +163,10 @@
         --recurring-frequency__button_count: 1;
         --give-by-select__button_count: 1;
         --radio-to-buttons__button_count: 1;
-
+        .radio-to-buttons_count_2 {
+          --recurring-frequency__button_count: 1;
+          --radio-to-buttons__button_count: 1;
+        }
         @for $i from 1 through 11 {
           .i#{$i}-m100 .en__field:nth-of-type(#{$i}) {
             flex-basis: 100%;
@@ -171,6 +182,10 @@
       --recurring-frequency__button_count: 1;
       --give-by-select__button_count: 1;
       --radio-to-buttons__button_count: 1;
+      .radio-to-buttons_count_2 {
+        --recurring-frequency__button_count: 1;
+        --radio-to-buttons__button_count: 1;
+      }
     }
 
     &[data-engrid-embedded] {
@@ -191,6 +206,7 @@
       background-color: var(--color_white);
 
       #logo {
+        color: transparent;
         background: transparent
           url(https://secure.aspca.org/files/aspca/themes/aspca_2015/images-source/navlogo-022316.png)
           no-repeat 0 0;
@@ -279,9 +295,21 @@
           text-align: center;
 
           a {
+            font-family: var(--default_font-family);
             color: #fff;
             text-decoration: none;
             padding: 0 5px;
+          }
+          #ot-sdk-btn {
+            background: unset !important;
+            font-size: 18px !important;
+            line-height: 27px;
+            padding: 0px !important;
+            font-weight: normal;
+            margin: 2px 0px 0px 5px !important;
+            border: medium;
+            font-family: var(--default_font-family);
+            display: inline-block;
           }
         }
       }
@@ -333,6 +361,7 @@
       grid-column: pc;
       border-bottom: 6px solid var(--color_orange);
       color: var(--color_white);
+      min-height: 145px;
       &:has(.banner-image) {
         padding: 0;
       }
@@ -432,6 +461,23 @@
       border-bottom-right-radius: 0;
     }
 
+    // start Premiums
+    .en__pg__body {
+      --h2_font-size: 20px;
+      --h2_font-weight: 800;
+      --p_font-size: 16px;
+      background-color: var(--color_cream);
+      h2 {
+        margin-bottom: 0;
+      }
+    }
+    .en__pg__image {
+      transition: transform 0.3s ease-in-out;
+    }
+    .en__pg__image:hover {
+      transform: scale(2);
+    }
+    // end premiums
     /* Phone disclaimer */
     .en__field--phoneNumber2 .en__field__element::after {
       content: "By providing my number, I agree that ASPCA and its agents may contact me by phone call regarding ASPCA programs, events and membership.";
@@ -445,12 +491,6 @@
         background-color: var(--engrid__body-main_background-color);
         padding: var(--engrid__body-top_padding);
       }
-    }
-
-    &:not([data-engrid-thank-you="true"])
-      .en__component--advrow
-      .content-footer {
-      grid-column: bc-start / bc-end;
     }
 
     p .signature {
@@ -490,6 +530,7 @@
         gap: 20px;
         list-style-type: none;
         flex-wrap: wrap;
+        padding: 0;
       }
     }
 
@@ -591,7 +632,12 @@
           border-top: 6px solid var(--color_orange);
           color: var(--color_black);
           background-color: var(--color_white);
+          min-height: unset;
         }
+      }
+
+      .breadcrumbs p {
+        --a_color: var(--color_black);
       }
     }
   }
@@ -624,6 +670,11 @@
 
   .radio-to-buttons_donationAmt {
     --fields_spacing-inline: 4px;
+    .en__field--donationAmt
+      div:not(.en__field__item--other)
+      .en__field__label--item::after {
+      margin-left: 0;
+    }
     .en__field--donationAmt.en__field--radio > .en__field__element {
       justify-content: start;
       .en__field__item {
@@ -683,6 +734,10 @@
     }
   }
 
+  .en__ecarditems__prevclose {
+    --button_color_hover: var(--color_black);
+  }
+
   &:not(#en__pagebuilder):not([data-engrid-debug]) {
     &:not([data-engrid-inmem-method="ecard"]) .showif-inmem-ecard,
     &:not([data-engrid-inmem-method="mail"]) .showif-inmem-mail {
@@ -705,6 +760,108 @@
       }
     }
   }
+
+  // start ECARD
+  .ecard-warning {
+    background-color: #f44336;
+    padding: 10px;
+    border-radius: 5px;
+    color: white;
+
+    > *:first-child {
+      margin-top: 0;
+    }
+
+    > *:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  .en__ecardrecipients__list {
+    margin-bottom: 20px;
+  }
+
+  .en__ecardrecipients__name {
+    width: calc(50% - 50px) !important;
+    input {
+      width: 100%;
+    }
+  }
+
+  .en__ecardrecipients__email {
+    width: calc(50% + 40px) !important;
+    input {
+      margin-right: 5px;
+      width: calc(100% - 53px);
+    }
+  }
+
+  button.en__ecarditems__button.en__ecarditems__addrecipient {
+    width: auto;
+    height: auto;
+    padding: 15px !important;
+    margin: 0 0 !important;
+  }
+
+  .en__ecardrecipients__detail {
+    --button_background-color_hover: var(--color_blue);
+    position: relative;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .en__ecardrecipients__list {
+    background-color: var(--engrid__body-main_background-color);
+  }
+
+  .en__ecardrecipients__list:has(> .en__ecardrecipients__recipient):before {
+    content: "Recipients:";
+  }
+
+  .en__ecardrecipients__recipient {
+    align-items: center;
+    padding: 10px 0px;
+    background-color: var(--engrid__body-main_background-color);
+
+    input.ecardrecipient__name,
+    input.ecardrecipient__email {
+      background-color: var(--engrid__body-main_background-color);
+      @media screen and (min-width: 600px) {
+        width: 47.5% !important;
+      }
+    }
+  }
+
+  .ecardrecipient__remove button {
+    margin: 0;
+
+    background: var(--error__color);
+    color: white;
+
+    &:hover {
+      color: white;
+    }
+  }
+
+  @media screen and (max-width: 600px) {
+    .en__ecardrecipients__recipient {
+      position: relative;
+      flex-direction: column;
+      align-items: flex-start;
+
+      input {
+        width: calc(100% - 50px) !important;
+      }
+
+      .ecardrecipient__remove {
+        position: absolute;
+        right: 15px;
+        top: calc(50% - 15px);
+      }
+    }
+  }
+  // end ECARD
 
   @mixin until-mobile-l {
     &:not(#en__pagebuilder):not([data-engrid-debug]) .showif-desktop {

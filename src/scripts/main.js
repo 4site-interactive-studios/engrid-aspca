@@ -71,6 +71,35 @@ export const customScript = function (App) {
     }
   }
 
+  // Mutation Observer for 4 seconds to check if "#ot-sdk-btn" appears, if it does, remove it's style attributes
+  const otButton = document.querySelector("#ot-sdk-btn");
+  const footer = document.getElementById("bottom-footer");
+  if (otButton) {
+    otButton.removeAttribute("style");
+  } else if (footer) {
+    const observer = new MutationObserver((mutationsList, observer) => {
+      for (const mutation of mutationsList) {
+        if (mutation.type === "childList") {
+          const otSdkBtn = document.querySelector("#ot-sdk-btn");
+          if (otSdkBtn) {
+            otSdkBtn.removeAttribute("style");
+            observer.disconnect();
+            break;
+          }
+        }
+      }
+    });
+
+    observer.observe(footer, {
+      childList: true,
+      subtree: true,
+    });
+
+    setTimeout(() => {
+      observer.disconnect();
+    }, 4000);
+  }
+
   if (App.isThankYouPage()) {
     App.setBodyData("thank-you", "true");
   }

@@ -17,10 +17,10 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Monday, November 16, 2026 @ 16:08:41 ET
+ *  Date: Tuesday, November 17, 2026 @ 16:01:52 ET
  *  By: nick
  *  ENGrid styles: v0.28.9
- *  ENGrid scripts: v0.28.9
+ *  ENGrid scripts: v0.28.11
  *
  *  Created by 4Site Studios
  *  Come work with us or join our team, we would love to hear from you
@@ -26119,7 +26119,9 @@ class EmbeddedEcard {
             window.EngridEmbeddedEcard.pageUrl !== "");
     }
     onEmbeddedEcardPage() {
-        return engrid_ENGrid.getPageType() === "ECARD" && engrid_ENGrid.hasBodyData("embedded") && engrid_ENGrid.getPageNumber() === 1;
+        return (engrid_ENGrid.getPageType() === "ECARD" &&
+            engrid_ENGrid.hasBodyData("embedded") &&
+            engrid_ENGrid.getPageNumber() === 1);
     }
     onPostActionPage() {
         return (sessionStorage.getItem("engrid-embedded-ecard") !== null &&
@@ -26298,6 +26300,8 @@ class EmbeddedEcard {
             recipientName,
             recipientEmail,
         ].forEach((el) => {
+            if (!el)
+                return;
             el.addEventListener("input", () => {
                 if (this.isSubmitting)
                     return;
@@ -26601,6 +26605,10 @@ class OptInLadder {
                 return;
             }
             placement.appendChild(iframe);
+            // The iFrame collapses to 0px and regrows between ladder steps. Disable
+            // scroll anchoring so the browser doesn't shift the page to follow the
+            // content below the iFrame.
+            document.documentElement.style.overflowAnchor = "none";
             iframe.addEventListener("load", () => {
                 var _a;
                 if (iframe.contentWindow) {
@@ -27798,7 +27806,7 @@ class PreferredPaymentMethod {
 }
 
 ;// ./node_modules/@4site/engrid-scripts/dist/version.js
-const AppVersion = "0.28.9";
+const AppVersion = "0.28.11";
 
 ;// ./node_modules/@4site/engrid-scripts/dist/index.js
  // Runs first so it can change the DOM markup before any markup dependent code fires
@@ -28091,6 +28099,33 @@ const customScript = function (App) {
       cardsElement.setAttribute("src", "https://bd6ca9cefa6fb6e0adf1-c2f9aa1adb9f60a775f60074e4c86031.ssl.cf5.rackcdn.com/20014/payment-type-cards.png?v=1794326459000");
     }
   }
+
+  // Mutation Observer for 4 seconds to check if "#ot-sdk-btn" appears, if it does, remove it's style attributes
+  const otButton = document.querySelector("#ot-sdk-btn");
+  const footer = document.getElementById("bottom-footer");
+  if (otButton) {
+    otButton.removeAttribute("style");
+  } else if (footer) {
+    const observer = new MutationObserver((mutationsList, observer) => {
+      for (const mutation of mutationsList) {
+        if (mutation.type === "childList") {
+          const otSdkBtn = document.querySelector("#ot-sdk-btn");
+          if (otSdkBtn) {
+            otSdkBtn.removeAttribute("style");
+            observer.disconnect();
+            break;
+          }
+        }
+      }
+    });
+    observer.observe(footer, {
+      childList: true,
+      subtree: true
+    });
+    setTimeout(() => {
+      observer.disconnect();
+    }, 4000);
+  }
   if (App.isThankYouPage()) {
     App.setBodyData("thank-you", "true");
   }
@@ -28152,6 +28187,7 @@ class InformMethod {
   sync() {
     const selected = Array.from(this.radios).find(radio => radio.checked);
     if (!selected || selected.value !== "ecard" && selected.value !== "mail") {
+      this.app.setBodyData("inmem-method", "");
       return;
     }
     const method = selected.value;

@@ -24,6 +24,7 @@ export class InformMethod {
       !selected ||
       (selected.value !== "ecard" && selected.value !== "mail")
     ) {
+      this.app.setBodyData("inmem-method", "");
       return;
     }
 
