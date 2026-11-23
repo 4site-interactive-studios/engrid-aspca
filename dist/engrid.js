@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Monday, November 23, 2026 @ 15:22:21 ET
+ *  Date: Monday, November 23, 2026 @ 15:25:30 ET
  *  By: nick
  *  ENGrid styles: v0.28.9
  *  ENGrid scripts: v0.28.11
@@ -32378,16 +32378,16 @@ class VGS {
     this.options = engrid_ENGrid.getOption("VGS");
     this.errorMessages = {
       "transaction.ccnumber": {
-        empty: "Please enter a card number",
-        invalid: "Please enter a valid card number"
+        empty: "Credit Card Number is a mandatory form field.",
+        invalid: "Enter a valid card number"
       },
       "transaction.ccvv": {
-        empty: "Please enter a CVV",
-        invalid: "Please enter a valid CVV"
+        empty: "CVV is a mandatory form field.",
+        invalid: "Enter a valid CVV"
       },
       "transaction.ccexpire": {
-        empty: "Please enter an expiration date",
-        invalid: "Please enter a valid expiration date"
+        empty: "Expiration Date is a mandatory form field.",
+        invalid: "Enter a valid expiration date"
       }
     };
     this.paymentTypeField = document.querySelector("#en__field_transaction_paymenttype");
