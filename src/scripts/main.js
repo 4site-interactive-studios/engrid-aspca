@@ -1,5 +1,19 @@
 import { Slideshow } from "./slideshow";
 
+export const updateBodyTitleHeight = function (root = document) {
+  root
+    .querySelectorAll(".en__component--advrow > .body-title")
+    .forEach((bodyTitle) => {
+      const advancedRow = bodyTitle.parentElement;
+      if (!advancedRow) return;
+
+      advancedRow.style.setProperty(
+        "--body-title-height",
+        `${bodyTitle.getBoundingClientRect().height}px`
+      );
+    });
+};
+
 export const customScript = function (App) {
   console.log("ENGrid client scripts are executing");
   // Add your client scripts here

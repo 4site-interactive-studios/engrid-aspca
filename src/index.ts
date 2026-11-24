@@ -2,7 +2,7 @@ import { Options, App } from "@4site/engrid-scripts"; // Uses ENGrid via NPM
 // import { Options, App } from "../../engrid/packages/scripts"; // Uses ENGrid via Visual Studio Workspace
 
 import "./sass/main.scss";
-import { customScript } from "./scripts/main";
+import { customScript, updateBodyTitleHeight } from "./scripts/main";
 import { LegacySocialShare } from "./scripts/legacy_social_share";
 import { InformMethod } from "./scripts/inform_method";
 
@@ -41,9 +41,12 @@ const options: Options = {
   Debug: App.getUrlParameter("debug") == "true" ? true : false,
   onLoad: () => {
     customScript(App);
+    updateBodyTitleHeight();
     new LegacySocialShare();
     new InformMethod(App);
   },
-  onResize: () => {},
+  onResize: () => {
+    updateBodyTitleHeight();
+  },
 };
 new App(options);

@@ -19,7 +19,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Tuesday, November 24, 2026 @ 17:08:34 ET
+ *  Date: Tuesday, November 24, 2026 @ 17:30:40 ET
  *  By: nick
  *  ENGrid styles: v0.28.9
  *  ENGrid scripts: v0.28.12
@@ -8498,10 +8498,10 @@ body:not(#en__pagebuilder)[data-engrid-no-body-footer] .en__component--advrow .b
   }
 }
 [data-engrid-theme=aspca][data-engrid-subtheme=replica] .en__component--advrow .body-title{
+  --body-title-content-column:bc;
   border-bottom:6px solid var(--color_orange);
   color:var(--color_white);
   grid-column:pc;
-  min-height:145px;
 }
 [data-engrid-theme=aspca][data-engrid-subtheme=replica] .en__component--advrow .body-title:has(.banner-image){
   padding:0;
@@ -8510,7 +8510,7 @@ body:not(#en__pagebuilder)[data-engrid-no-body-footer] .en__component--advrow .b
   margin-top:0;
 }
 [data-engrid-theme=aspca][data-engrid-subtheme=replica] .en__component--advrow .body-title>*{
-  grid-column:rbc-start /  rbc-end;
+  grid-column:var(--body-title-content-column);
 }
 [data-engrid-theme=aspca][data-engrid-subtheme=replica] .en__component--advrow .body-title>.banner-image{
   grid-column:pc;
@@ -8658,8 +8658,11 @@ body:not(#en__pagebuilder)[data-engrid-no-body-footer] .en__component--advrow .b
   width:100%;
 }
 @media screen and (min-width:768px){
-  [data-engrid-theme=aspca][data-engrid-subtheme=replica] .en__component--advrow .body-banner:has(.en__component--codeblock .engrid-slideshow){
-    margin-top:-145px;
+  [data-engrid-theme=aspca][data-engrid-subtheme=replica] .en__component--advrow:has(>.body-banner :is(.engrid-slideshow,.overlay-title))>.body-title{
+    --body-title-content-column:rbc;
+  }
+  [data-engrid-theme=aspca][data-engrid-subtheme=replica] .en__component--advrow .body-banner:has(.engrid-slideshow,.overlay-title){
+    margin-top:calc(var(--body-title-height, 0px)*-1);
     z-index:4 !important;
   }
   [data-engrid-theme=aspca][data-engrid-subtheme=replica] #engrid>.en__component--advrow,[data-engrid-theme=aspca][data-engrid-subtheme=replica] form>.en__component--advrow,[data-engrid-theme=aspca][data-engrid-subtheme=replica] form>.en__component--advrow>*{
@@ -8702,7 +8705,6 @@ body:not(#en__pagebuilder)[data-engrid-no-body-footer] .en__component--advrow .b
     border-bottom:unset;
     border-top:6px solid var(--color_orange);
     color:var(--color_black);
-    min-height:unset;
   }
   [data-engrid-theme=aspca][data-engrid-subtheme=replica] .breadcrumbs p{
     --a_color:var(--color_black);

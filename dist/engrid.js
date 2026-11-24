@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Tuesday, November 24, 2026 @ 17:08:34 ET
+ *  Date: Tuesday, November 24, 2026 @ 17:30:40 ET
  *  By: nick
  *  ENGrid styles: v0.28.9
  *  ENGrid scripts: v0.28.12
@@ -28105,6 +28105,13 @@ class Slideshow {
 }
 ;// ./src/scripts/main.js
 
+const updateBodyTitleHeight = function (root = document) {
+  root.querySelectorAll(".en__component--advrow > .body-title").forEach(bodyTitle => {
+    const advancedRow = bodyTitle.parentElement;
+    if (!advancedRow) return;
+    advancedRow.style.setProperty("--body-title-height", `${bodyTitle.getBoundingClientRect().height}px`);
+  });
+};
 const customScript = function (App) {
   console.log("ENGrid client scripts are executing");
   // Add your client scripts here
@@ -28292,10 +28299,13 @@ const options = {
   Debug: App.getUrlParameter("debug") == "true" ? true : false,
   onLoad: () => {
     customScript(App);
+    updateBodyTitleHeight();
     new LegacySocialShare();
     new InformMethod(App);
   },
-  onResize: () => {}
+  onResize: () => {
+    updateBodyTitleHeight();
+  }
 };
 new App(options);
 })();
