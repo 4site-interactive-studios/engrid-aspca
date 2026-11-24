@@ -19,10 +19,10 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Tuesday, November 17, 2026 @ 16:01:52 ET
+ *  Date: Tuesday, November 24, 2026 @ 17:08:34 ET
  *  By: nick
  *  ENGrid styles: v0.28.9
- *  ENGrid scripts: v0.28.11
+ *  ENGrid scripts: v0.28.12
  *
  *  Created by 4Site Studios
  *  Come work with us or join our team, we would love to hear from you
@@ -8214,6 +8214,10 @@ body[data-engrid-debug]:before{
   --give-by-select__button_background-color_checked:var(--color_orange);
   --radio-to-buttons__button_count:2;
 }
+body:not(#en__pagebuilder)[data-engrid-no-body-footer] .en__component--advrow .body-footer{
+  display:none;
+}
+
 [data-engrid-theme=aspca][data-engrid-subtheme=replica]{
   --engrid__page_background-color:#f5f5f5;
   --engrid__body-title_background-color:var(--color_navy);
@@ -8257,6 +8261,15 @@ body[data-engrid-debug]:before{
   [data-engrid-theme=aspca][data-engrid-subtheme=replica][data-engrid-layout*="2col"] .radio-to-buttons_count_2{
     --recurring-frequency__button_count:1;
     --radio-to-buttons__button_count:1;
+  }
+  [data-engrid-theme=aspca][data-engrid-subtheme=replica][data-engrid-layout*="2col"] .give-by-select-wrapper .en__field__item.en__field--giveBySelect:first-child{
+    flex-basis:calc(100%/var(--give-by-select__button_count));
+  }
+  [data-engrid-theme=aspca][data-engrid-subtheme=replica][data-engrid-layout*="2col"] .radio-to-buttons_donationAmt{
+    --donation-amount__button_count:3;
+  }
+  [data-engrid-theme=aspca][data-engrid-subtheme=replica][data-engrid-layout*="2col"] .radio-to-buttons_donationAmt .en__field--donationAmt.en__field--radio>.en__field__element .en__field__item{
+    flex-basis:calc(100%/var(--donation-amount__button_count));
   }
   [data-engrid-theme=aspca][data-engrid-subtheme=replica][data-engrid-layout*="2col"] .i1-m100 .en__field:first-of-type{
     flex-basis:100%;
@@ -8325,7 +8338,7 @@ body[data-engrid-debug]:before{
     flex-basis:50%;
   }
 }
-@media screen and (max-width:529px){
+@media screen and (max-width:549px){
   [data-engrid-theme=aspca][data-engrid-subtheme=replica]{
     --recurring-frequency__button_count:1;
     --give-by-select__button_count:1;
@@ -8334,6 +8347,17 @@ body[data-engrid-debug]:before{
   [data-engrid-theme=aspca][data-engrid-subtheme=replica] .radio-to-buttons_count_2{
     --recurring-frequency__button_count:1;
     --radio-to-buttons__button_count:1;
+  }
+  [data-engrid-theme=aspca][data-engrid-subtheme=replica] .radio-to-buttons_donationAmt{
+    --donation-amount__button_count:3;
+  }
+  [data-engrid-theme=aspca][data-engrid-subtheme=replica] .radio-to-buttons_donationAmt .en__field--donationAmt.en__field--radio>.en__field__element .en__field__item{
+    flex-basis:calc(100%/var(--donation-amount__button_count));
+  }
+}
+@media screen and (min-width:550px){
+  [data-engrid-theme=aspca][data-engrid-subtheme=replica] .give-by-select-wrapper.first-row-span .en__field__item.en__field--giveBySelect:first-child{
+    flex-basis:100%;
   }
 }
 [data-engrid-theme=aspca][data-engrid-subtheme=replica][data-engrid-embedded] #bottom-footer,[data-engrid-theme=aspca][data-engrid-subtheme=replica][data-engrid-embedded] #header{
@@ -8501,6 +8525,12 @@ body[data-engrid-debug]:before{
 [data-engrid-theme=aspca][data-engrid-subtheme=replica] .en__component--advrow .body-title h1,[data-engrid-theme=aspca][data-engrid-subtheme=replica] .en__component--advrow .body-title h2,[data-engrid-theme=aspca][data-engrid-subtheme=replica] .en__component--advrow .body-title h3,[data-engrid-theme=aspca][data-engrid-subtheme=replica] .en__component--advrow .body-title h4,[data-engrid-theme=aspca][data-engrid-subtheme=replica] .en__component--advrow .body-title h5,[data-engrid-theme=aspca][data-engrid-subtheme=replica] .en__component--advrow .body-title h6{
   color:inherit;
 }
+[data-engrid-theme=aspca][data-engrid-subtheme=replica] .en__component--advrow .body-footer{
+  grid-column:pc;
+}
+[data-engrid-theme=aspca][data-engrid-subtheme=replica] .en__component--advrow .body-footer>*{
+  grid-column:bc;
+}
 [data-engrid-theme=aspca][data-engrid-subtheme=replica] .breadcrumbs p{
   --a_font-family:var(--bold_font-family);
   --a_color:var(--color_white);
@@ -8618,14 +8648,14 @@ body[data-engrid-debug]:before{
   flex-direction:column;
 }
 [data-engrid-theme=aspca][data-engrid-subtheme=replica] .ty-page-actions .actions-content ul{
-  align-items:center;
-  display:flex;
-  flex-direction:row;
-  flex-wrap:wrap;
+  display:grid;
   gap:20px;
-  justify-content:center;
+  grid-template-columns:1fr 1fr 1fr;
   list-style-type:none;
-  padding:0;
+}
+[data-engrid-theme=aspca][data-engrid-subtheme=replica] .ty-page-actions .actions-content ul img{
+  max-width:341px;
+  width:100%;
 }
 @media screen and (min-width:768px){
   [data-engrid-theme=aspca][data-engrid-subtheme=replica] .en__component--advrow .body-banner:has(.en__component--codeblock .engrid-slideshow){
@@ -8676,6 +8706,28 @@ body[data-engrid-debug]:before{
   }
   [data-engrid-theme=aspca][data-engrid-subtheme=replica] .breadcrumbs p{
     --a_color:var(--color_black);
+  }
+  [data-engrid-theme=aspca][data-engrid-subtheme=replica] .ty-page-actions{
+    align-items:center;
+    display:flex;
+    flex-direction:column;
+  }
+  [data-engrid-theme=aspca][data-engrid-subtheme=replica] .ty-page-actions .actions-content ul{
+    align-items:center;
+    display:flex;
+    flex-direction:row;
+    flex-wrap:wrap;
+    gap:20px;
+    justify-content:center;
+    list-style-type:none;
+    padding:0;
+  }
+  [data-engrid-theme=aspca][data-engrid-subtheme=replica] #bottom-footer .nav-links{
+    align-items:center;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    justify-content:center;
   }
 }
 [data-engrid-theme=aspca] b,[data-engrid-theme=aspca] em,[data-engrid-theme=aspca] strong{
@@ -8796,6 +8848,15 @@ body[data-engrid-debug]:before{
   gap:10px;
   justify-content:flex-start;
   position:relative;
+}
+@media screen and (max-width:599px){
+  [data-engrid-theme=aspca] .en__ecardrecipients__detail{
+    align-items:stretch;
+    flex-direction:column;
+  }
+  [data-engrid-theme=aspca] .en__ecardrecipients__email,[data-engrid-theme=aspca] .en__ecardrecipients__name{
+    width:100% !important;
+  }
 }
 [data-engrid-theme=aspca] .en__ecardrecipients__list{
   background-color:var(--engrid__body-main_background-color);

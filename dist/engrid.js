@@ -17,10 +17,10 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Tuesday, November 17, 2026 @ 16:01:52 ET
+ *  Date: Tuesday, November 24, 2026 @ 17:08:34 ET
  *  By: nick
  *  ENGrid styles: v0.28.9
- *  ENGrid scripts: v0.28.11
+ *  ENGrid scripts: v0.28.12
  *
  *  Created by 4Site Studios
  *  Come work with us or join our team, we would love to hear from you
@@ -25474,12 +25474,37 @@ class PostalCodeValidator {
 //
 // The VGS component can also be set at the page level, if necessary
 //
+var __rest = (undefined && undefined.__rest) || function (s, e) {
+    var t = {};
+    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
+        t[p] = s[p];
+    if (s != null && typeof Object.getOwnPropertySymbols === "function")
+        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
+            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
+                t[p[i]] = s[p[i]];
+        }
+    return t;
+};
 
 class VGS {
     constructor() {
         this.logger = new EngridLogger("VGS", "black", "pink", "💳");
         this.vgsField = document.querySelector(".en__field--vgs");
         this.options = engrid_ENGrid.getOption("VGS");
+        this.errorMessages = {
+            "transaction.ccnumber": {
+                empty: "Credit Card Number is a mandatory form field.",
+                invalid: "Enter a valid card number",
+            },
+            "transaction.ccvv": {
+                empty: "CVV is a mandatory form field.",
+                invalid: "Enter a valid CVV",
+            },
+            "transaction.ccexpire": {
+                empty: "Expiration Date is a mandatory form field.",
+                invalid: "Enter a valid expiration date",
+            },
+        };
         this.paymentTypeField = document.querySelector("#en__field_transaction_paymenttype");
         this._form = EnForm.getInstance();
         this.field_expiration_month = null;
@@ -25582,7 +25607,8 @@ class VGS {
                     "normal",
             },
         };
-        const options = this.options;
+        const _a = this.options || {}, { errorMessages } = _a, options = __rest(_a, ["errorMessages"]);
+        this.errorMessages = engrid_ENGrid.deepMerge(this.errorMessages, errorMessages || {});
         const defaultOptions = {
             "transaction.ccnumber": {
                 showCardIcon: true,
@@ -25594,7 +25620,7 @@ class VGS {
                 // Autocomplete is not customizable
                 autoComplete: "cc-number",
                 validations: ["required", "validCardNumber"],
-                validCardBrands: null
+                validCardBrands: null,
             },
             "transaction.ccvv": {
                 showCardIcon: false,
@@ -25616,7 +25642,8 @@ class VGS {
         if (options &&
             options["transaction.ccnumber"] &&
             options["transaction.ccnumber"].validCardBrands) {
-            defaultOptions["transaction.ccnumber"].validCardBrands = options["transaction.ccnumber"].validCardBrands;
+            defaultOptions["transaction.ccnumber"].validCardBrands =
+                options["transaction.ccnumber"].validCardBrands;
         }
         // Deep merge the default options with the options set in the theme
         this.options = engrid_ENGrid.deepMerge(defaultOptions, options);
@@ -25680,31 +25707,52 @@ class VGS {
         }, 1000);
     }
     validate() {
+        let isValid = true;
         if (this.paymentTypeField.value.toLowerCase() === "card" ||
             this.paymentTypeField.value.toLowerCase() === "visa" ||
             this.paymentTypeField.value.toLowerCase() === "vi") {
-            const cardContainer = document.querySelector(".en__field--vgs.en__field--ccnumber");
-            const cardEmpty = cardContainer === null || cardContainer === void 0 ? void 0 : cardContainer.querySelector(".vgs-collect-container__empty");
-            const cvvContainer = document.querySelector(".en__field--vgs.en__field--ccvv");
-            const cvvEmpty = cvvContainer === null || cvvContainer === void 0 ? void 0 : cvvContainer.querySelector(".vgs-collect-container__empty");
-            if (cardContainer && cardEmpty) {
+            const fields = [
+                {
+                    name: "transaction.ccnumber",
+                    selector: ".en__field--vgs.en__field--ccnumber",
+                },
+                {
+                    name: "transaction.ccvv",
+                    selector: ".en__field--vgs.en__field--ccvv",
+                },
+                {
+                    name: "transaction.ccexpire",
+                    selector: ".en__field--vgs.en__field--ccexpire",
+                },
+            ];
+            fields.forEach(({ name, selector }) => {
+                const container = document.querySelector(selector);
+                if (!container)
+                    return;
+                const empty = container.querySelector(".vgs-collect-container__empty");
+                const invalid = container.querySelector(".vgs-collect-container__invalid");
+                if (!empty && !invalid)
+                    return;
+                // An empty input is also invalid, so the empty message takes precedence.
+                const errorMessage = empty
+                    ? this.errorMessages[name].empty
+                    : this.errorMessages[name].invalid;
+                if (!errorMessage) {
+                    isValid = false;
+                    return;
+                }
+                const scrollToError = isValid;
                 window.setTimeout(() => {
-                    engrid_ENGrid.setError(cardContainer, "Please enter a valid card number");
-                    // Scroll to the error
-                    cardContainer.scrollIntoView({ behavior: "smooth" });
+                    engrid_ENGrid.setError(container, errorMessage);
+                    // Scroll to the first error
+                    if (scrollToError) {
+                        container.scrollIntoView({ behavior: "smooth" });
+                    }
                 }, 100);
-                return false;
-            }
-            if (cvvContainer && cvvEmpty) {
-                window.setTimeout(() => {
-                    engrid_ENGrid.setError(cvvContainer, "Please enter a valid CVV");
-                    // Scroll to the error
-                    cvvContainer.scrollIntoView({ behavior: "smooth" });
-                }, 100);
-                return false;
-            }
+                isValid = false;
+            });
         }
-        return true;
+        return isValid;
     }
 }
 
@@ -27806,7 +27854,7 @@ class PreferredPaymentMethod {
 }
 
 ;// ./node_modules/@4site/engrid-scripts/dist/version.js
-const AppVersion = "0.28.11";
+const AppVersion = "0.28.12";
 
 ;// ./node_modules/@4site/engrid-scripts/dist/index.js
  // Runs first so it can change the DOM markup before any markup dependent code fires

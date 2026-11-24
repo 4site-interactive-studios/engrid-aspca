@@ -114,6 +114,12 @@
 }
 
 /* Add your custom theme styles here */
+body:not(#en__pagebuilder)[data-engrid-no-body-footer]
+  .en__component--advrow
+  .body-footer {
+  display: none;
+}
+
 [data-engrid-theme="aspca"] {
   &[data-engrid-subtheme="replica"] {
     --engrid__page_background-color: #f5f5f5;
@@ -167,6 +173,18 @@
           --recurring-frequency__button_count: 1;
           --radio-to-buttons__button_count: 1;
         }
+        .give-by-select-wrapper
+          .en__field__item.en__field--giveBySelect:first-child {
+          flex-basis: calc(100% / var(--give-by-select__button_count));
+        }
+        .radio-to-buttons_donationAmt {
+          --donation-amount__button_count: 3;
+          .en__field--donationAmt.en__field--radio > .en__field__element {
+            .en__field__item {
+              flex-basis: calc(100% / var(--donation-amount__button_count));
+            }
+          }
+        }
         @for $i from 1 through 11 {
           .i#{$i}-m100 .en__field:nth-of-type(#{$i}) {
             flex-basis: 100%;
@@ -178,13 +196,28 @@
       }
     }
 
-    @media screen and (max-width: 529px) {
+    @media screen and (max-width: 549px) {
       --recurring-frequency__button_count: 1;
       --give-by-select__button_count: 1;
       --radio-to-buttons__button_count: 1;
       .radio-to-buttons_count_2 {
         --recurring-frequency__button_count: 1;
         --radio-to-buttons__button_count: 1;
+      }
+      .radio-to-buttons_donationAmt {
+        --donation-amount__button_count: 3;
+        .en__field--donationAmt.en__field--radio > .en__field__element {
+          .en__field__item {
+            flex-basis: calc(100% / var(--donation-amount__button_count));
+          }
+        }
+      }
+    }
+
+    @media screen and (min-width: 550px) {
+      .give-by-select-wrapper.first-row-span
+        .en__field__item.en__field--giveBySelect:first-child {
+        flex-basis: 100%;
       }
     }
 
@@ -394,6 +427,13 @@
       }
     }
 
+    .en__component--advrow .body-footer {
+      grid-column: pc;
+      > * {
+        grid-column: bc;
+      }
+    }
+
     .breadcrumbs p {
       font-weight: 800;
       font-family: var(--bold_font-family);
@@ -523,14 +563,14 @@
       flex-direction: column;
       align-items: center;
       .actions-content ul {
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        justify-content: center;
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
         gap: 20px;
         list-style-type: none;
-        flex-wrap: wrap;
-        padding: 0;
+        img {
+          width: 100%;
+          max-width: 341px;
+        }
       }
     }
 
@@ -638,6 +678,30 @@
 
       .breadcrumbs p {
         --a_color: var(--color_black);
+      }
+
+      .ty-page-actions {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        .actions-content ul {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          justify-content: center;
+          gap: 20px;
+          list-style-type: none;
+          flex-wrap: wrap;
+          padding: 0;
+        }
+      }
+
+      #bottom-footer .nav-links {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
       }
     }
   }
@@ -809,6 +873,18 @@
     justify-content: flex-start;
     align-items: center;
     gap: 10px;
+  }
+
+  @media screen and (max-width: 599px) {
+    .en__ecardrecipients__detail {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .en__ecardrecipients__name,
+    .en__ecardrecipients__email {
+      width: 100% !important;
+    }
   }
 
   .en__ecardrecipients__list {
