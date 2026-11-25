@@ -19,7 +19,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Tuesday, November 24, 2026 @ 17:32:46 ET
+ *  Date: Wednesday, November 25, 2026 @ 09:51:55 ET
  *  By: nick
  *  ENGrid styles: v0.28.9
  *  ENGrid scripts: v0.28.12
@@ -3905,7 +3905,7 @@ button.en__ecarditems__addrecipient{
   line-height:normal;
 }
 
-.en__ecardrecipients__email{
+.en__ecardrecipients__email,.en__ecardrecipients__name{
   position:relative;
 }
 
@@ -3919,7 +3919,7 @@ button.en__ecarditems__addrecipient{
   width:100%;
 }
 
-.en__ecardrecipients__email .engrid__ecardrecipient__error{
+.en__ecardrecipients__email .engrid__ecardrecipient__error,.en__ecardrecipients__name .engrid__ecardrecipient__error{
   left:0;
   position:absolute;
   top:100%;
