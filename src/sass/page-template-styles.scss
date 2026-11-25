@@ -165,7 +165,7 @@ body:not(#en__pagebuilder)[data-engrid-no-body-footer]
     }
 
     &[data-engrid-layout*="2col"] {
-      @media screen and (min-width: 768px) and (max-width: 1139px) {
+      @media screen and (min-width: 768px) and (max-width: 1151px) {
         --recurring-frequency__button_count: 1;
         --give-by-select__button_count: 1;
         --radio-to-buttons__button_count: 1;
@@ -262,7 +262,7 @@ body:not(#en__pagebuilder)[data-engrid-no-body-footer]
         }
       }
 
-      @media only screen and (min-width: 768px) and (max-width: 1139px) {
+      @media only screen and (min-width: 768px) and (max-width: 1151px) {
         width: 100%;
         margin: 0 auto;
         height: 97px;
@@ -367,7 +367,7 @@ body:not(#en__pagebuilder)[data-engrid-no-body-footer]
         }
       }
 
-      @media only screen and (min-width: 768px) and (max-width: 1139px) {
+      @media only screen and (min-width: 768px) and (max-width: 1151px) {
         .footer-content-center {
           width: auto;
         }
@@ -572,6 +572,11 @@ body:not(#en__pagebuilder)[data-engrid-no-body-footer]
           max-width: 341px;
         }
       }
+    }
+
+    // Prevent the outgoing slideshow from anchoring the viewport during frequency swaps.
+    .en__component--advrow .body-banner:has(.engrid-slideshow) {
+      overflow-anchor: none;
     }
 
     @media screen and (min-width: 768px) {

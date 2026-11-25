@@ -19,7 +19,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Tuesday, November 24, 2026 @ 17:30:40 ET
+ *  Date: Wednesday, November 25, 2026 @ 12:54:44 ET
  *  By: nick
  *  ENGrid styles: v0.28.9
  *  ENGrid scripts: v0.28.12
@@ -8252,7 +8252,7 @@ body:not(#en__pagebuilder)[data-engrid-no-body-footer] .en__component--advrow .b
   max-height:150px;
   width:auto;
 }
-@media screen and (min-width:768px) and (max-width:1139px){
+@media screen and (min-width:768px) and (max-width:1151px){
   [data-engrid-theme=aspca][data-engrid-subtheme=replica][data-engrid-layout*="2col"]{
     --recurring-frequency__button_count:1;
     --give-by-select__button_count:1;
@@ -8394,7 +8394,7 @@ body:not(#en__pagebuilder)[data-engrid-no-body-footer] .en__component--advrow .b
     width:111px;
   }
 }
-@media only screen and (min-width:768px) and (max-width:1139px){
+@media only screen and (min-width:768px) and (max-width:1151px){
   [data-engrid-theme=aspca][data-engrid-subtheme=replica] #header{
     height:97px;
     margin:0 auto;
@@ -8481,7 +8481,7 @@ body:not(#en__pagebuilder)[data-engrid-no-body-footer] .en__component--advrow .b
     padding:0 20px;
   }
 }
-@media only screen and (min-width:768px) and (max-width:1139px){
+@media only screen and (min-width:768px) and (max-width:1151px){
   [data-engrid-theme=aspca][data-engrid-subtheme=replica] #bottom-footer .footer-content-center{
     width:auto;
   }
@@ -8656,6 +8656,9 @@ body:not(#en__pagebuilder)[data-engrid-no-body-footer] .en__component--advrow .b
 [data-engrid-theme=aspca][data-engrid-subtheme=replica] .ty-page-actions .actions-content ul img{
   max-width:341px;
   width:100%;
+}
+[data-engrid-theme=aspca][data-engrid-subtheme=replica] .en__component--advrow .body-banner:has(.engrid-slideshow){
+  overflow-anchor:none;
 }
 @media screen and (min-width:768px){
   [data-engrid-theme=aspca][data-engrid-subtheme=replica] .en__component--advrow:has(>.body-banner :is(.engrid-slideshow,.overlay-title))>.body-title{
