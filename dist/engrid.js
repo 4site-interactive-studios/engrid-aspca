@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Wednesday, November 25, 2026 @ 09:51:55 ET
+ *  Date: Wednesday, November 25, 2026 @ 11:03:44 ET
  *  By: nick
  *  ENGrid styles: v0.28.9
  *  ENGrid scripts: v0.28.12
@@ -20827,7 +20827,6 @@ class Ecard {
     this.logger = new EngridLogger("Ecard", "red", "#f5f5f5", "🪪");
     if (!this.shouldRun()) return;
     this.altsAndArias();
-    this.enhanceRecipientFields();
     this._form.onValidate.subscribe(() => this.checkRecipientFields());
     const schedule = engrid_ENGrid.getUrlParameter("engrid_ecard.schedule");
     const scheduleField = engrid_ENGrid.getField("ecard.schedule");
@@ -20871,152 +20870,7 @@ class Ecard {
   shouldRun() {
     return engrid_ENGrid.getPageType() === "ECARD";
   }
-  enhanceRecipientFields() {
-    const recipients = document.querySelector(".en__ecardrecipients");
-    if (!recipients) return;
-    const nameField = recipients.querySelector(".en__ecardrecipients__name input");
-    const emailField = recipients.querySelector(".en__ecardrecipients__email input");
-    const addButton = recipients.querySelector(".en__ecarditems__addrecipient");
-    const recipientList = recipients.querySelector(".en__ecardrecipients__list");
-    if (!nameField || !emailField || !addButton || !recipientList) return;
-    recipientList.querySelectorAll(".ecardrecipient__email").forEach(input => input.setAttribute("type", "email"));
-    recipientList.addEventListener("input", event => {
-      const input = event.target;
-      if (!input.matches(".ecardrecipient__email")) return;
-      input.setAttribute("type", "email");
-      const isInvalid = input.validity.typeMismatch;
-      input.classList.toggle("invalid", isInvalid);
-      if (isInvalid) {
-        this.showRecipientError(input, "Enter a valid email address");
-      } else {
-        this.clearRecipientError(input);
-      }
-    });
-    recipientList.addEventListener("focusout", event => {
-      var _a;
-      const input = event.target;
-      if (!input.matches(".ecardrecipient__name, .ecardrecipient__email") || input.value.trim()) {
-        return;
-      }
-      (_a = input.closest(".en__ecardrecipients__recipient")) === null || _a === void 0 ? void 0 : _a.remove();
-    });
-    const nameErrorObserver = new MutationObserver(() => {
-      if (nameField.classList.contains("invalid") && emailField.value.trim() && !nameField.value.trim()) {
-        this.showRecipientError(nameField, "Enter a Recipient Name");
-      } else {
-        this.clearRecipientError(nameField);
-      }
-    });
-    nameErrorObserver.observe(nameField, {
-      attributes: true,
-      attributeFilter: ["class"]
-    });
-    nameField.addEventListener("input", () => {
-      if (!nameField.value.trim()) return;
-      nameField.classList.remove("invalid");
-      this.clearRecipientError(nameField);
-    });
-    const emailErrorObserver = new MutationObserver(() => {
-      if (emailField.classList.contains("invalid")) {
-        this.showRecipientError(emailField, "Enter a valid email address");
-      } else {
-        this.clearRecipientError(emailField);
-      }
-    });
-    emailErrorObserver.observe(emailField, {
-      attributes: true,
-      attributeFilter: ["class"]
-    });
-    if (emailField.classList.contains("invalid")) {
-      this.showRecipientError(emailField, "Enter a valid email address");
-    }
-    // A hidden add button denotes a single-recipient form, where Enter should
-    // retain its normal form behavior.
-    if (addButton.offsetHeight === 0) return;
-    document.addEventListener("click", event => {
-      const target = event.target;
-      if (!addButton.contains(target)) return;
-      if (!emailField.value.trim() || nameField.value.trim()) return;
-      event.preventDefault();
-      event.stopImmediatePropagation();
-      nameField.classList.add("invalid");
-      this.showRecipientError(nameField, "Enter a Recipient Name");
-    }, true);
-    document.addEventListener("keydown", event => {
-      if (event.target !== nameField && event.target !== emailField || event.key !== "Enter" || event.isComposing) {
-        return;
-      }
-      event.preventDefault();
-      event.stopImmediatePropagation();
-      addButton.click();
-    }, true);
-    const recipientListObserver = new MutationObserver(mutations => {
-      let recipientAdded = false;
-      mutations.forEach(mutation => {
-        mutation.addedNodes.forEach(node => {
-          if (!(node instanceof HTMLElement)) return;
-          if (node.matches(".en__ecardrecipients__recipient") || node.querySelector(".en__ecardrecipients__recipient")) {
-            recipientAdded = true;
-          }
-        });
-      });
-      if (!recipientAdded) return;
-      recipientList.querySelectorAll(".ecardrecipient__email").forEach(input => input.setAttribute("type", "email"));
-      nameField.value = "";
-      emailField.value = "";
-      nameField.classList.remove("invalid");
-      emailField.classList.remove("invalid");
-      this.clearRecipientError(nameField);
-      this.clearRecipientError(emailField);
-      nameField.focus();
-    });
-    recipientListObserver.observe(recipientList, {
-      childList: true,
-      subtree: true
-    });
-  }
-  showRecipientError(input, message) {
-    const parent = input.parentElement;
-    if (!parent) return;
-    let error = Array.from(parent.children).find(child => child.classList.contains("engrid__ecardrecipient__error"));
-    if (!error) {
-      error = document.createElement("div");
-      error.className = "en__field__error engrid__ecardrecipient__error";
-      error.id = `ecard-recipient-error-${Math.random().toString(36).substring(2, 9)}`;
-      error.setAttribute("role", "alert");
-      parent.appendChild(error);
-    }
-    error.textContent = message;
-    input.setAttribute("aria-invalid", "true");
-    const describedBy = (input.getAttribute("aria-describedby") || "").split(/\s+/).filter(Boolean);
-    if (!describedBy.includes(error.id)) describedBy.push(error.id);
-    input.setAttribute("aria-describedby", describedBy.join(" "));
-  }
-  clearRecipientError(input) {
-    const parent = input.parentElement;
-    if (!parent) return;
-    const error = Array.from(parent.children).find(child => child.classList.contains("engrid__ecardrecipient__error"));
-    if (error) {
-      const describedBy = (input.getAttribute("aria-describedby") || "").split(/\s+/).filter(id => id && id !== error.id);
-      if (describedBy.length) {
-        input.setAttribute("aria-describedby", describedBy.join(" "));
-      } else {
-        input.removeAttribute("aria-describedby");
-      }
-      error.remove();
-    }
-    input.removeAttribute("aria-invalid");
-  }
-  removeEmptyRecipientRows(recipientList) {
-    recipientList.querySelectorAll(".en__ecardrecipients__recipient").forEach(recipient => {
-      const name = recipient.querySelector(".ecardrecipient__name");
-      const email = recipient.querySelector(".ecardrecipient__email");
-      if (!(name === null || name === void 0 ? void 0 : name.value.trim()) || !(email === null || email === void 0 ? void 0 : email.value.trim())) recipient.remove();
-    });
-  }
   checkRecipientFields() {
-    const recipientList = document.querySelector(".en__ecardrecipients__list");
-    if (recipientList) this.removeEmptyRecipientRows(recipientList);
     const addRecipientButton = document.querySelector(".en__ecarditems__addrecipient");
     // If we find the "+" button and there's no hidden recipient field, click on the button
     if (addRecipientButton && !document.querySelector(".ecardrecipient__email")) {
@@ -30411,11 +30265,13 @@ class CountryDisable {
 // 3 - Check the premium gift when click on the title or description
 // 4 - Create new {$PREMIUMTITLE} merge tag that's replaced with the premium gift name
 // 5 - Add aria-label to the radio inputs and alt tags to the images
+// 6 - Persist the selection for conditional content on the Thank You page
 
 class PremiumGift {
   constructor() {
     this.logger = new EngridLogger("PremiumGift", "#232323", "#f7b500", "🎁");
     this.enElements = new Array();
+    this.sessionStorageKey = "engrid_PremiumGiftState";
     this._frequency = DonationFrequency.getInstance();
     this._amount = DonationAmount.getInstance();
     if (!this.shoudRun()) return;
@@ -30468,6 +30324,7 @@ class PremiumGift {
               engrid_ENGrid.setBodyData("premium-gift-maximize", false);
               engrid_ENGrid.setBodyData("premium-gift-name", false);
               this.setPremiumTitle("");
+              window.sessionStorage.removeItem(this.sessionStorageKey);
             }
           }
         }
@@ -30495,13 +30352,16 @@ class PremiumGift {
       const premiumGiftContainer = premiumGift.closest(".en__pg");
       if (premiumGiftValue !== "0") {
         const premiumGiftName = premiumGiftContainer.querySelector(".en__pg__name");
+        const premiumGiftSlug = engrid_ENGrid.slugify(premiumGiftName.innerText);
         engrid_ENGrid.setBodyData("premium-gift-maximize", "false");
-        engrid_ENGrid.setBodyData("premium-gift-name", engrid_ENGrid.slugify(premiumGiftName.innerText));
+        engrid_ENGrid.setBodyData("premium-gift-name", premiumGiftSlug);
         this.setPremiumTitle(premiumGiftName.innerText);
+        this.storeSessionState(premiumGiftSlug, false);
       } else {
         engrid_ENGrid.setBodyData("premium-gift-maximize", "true");
         engrid_ENGrid.setBodyData("premium-gift-name", false);
         this.setPremiumTitle("");
+        this.storeSessionState("", true);
       }
       if (!premiumGiftContainer.classList.contains("en__pg--selected")) {
         const checkedPremiumGift = document.querySelector(".en__pg--selected");
@@ -30510,7 +30370,32 @@ class PremiumGift {
         }
         premiumGiftContainer.classList.add("en__pg--selected");
       }
+    } else if (engrid_ENGrid.isThankYouPage()) {
+      this.restoreSessionState();
     }
+  }
+  restoreSessionState() {
+    let state;
+    try {
+      state = JSON.parse(window.sessionStorage.getItem(this.sessionStorageKey) || "null");
+    } catch (_a) {
+      window.sessionStorage.removeItem(this.sessionStorageKey);
+      return;
+    }
+    if (!state) return;
+    if (state.page !== engrid_ENGrid.getPageID()) {
+      window.sessionStorage.removeItem(this.sessionStorageKey);
+      return;
+    }
+    engrid_ENGrid.setBodyData("premium-gift-maximize", state.maximize ? "true" : "false");
+    engrid_ENGrid.setBodyData("premium-gift-name", state.name || false);
+  }
+  storeSessionState(name, maximize) {
+    window.sessionStorage.setItem(this.sessionStorageKey, JSON.stringify({
+      page: engrid_ENGrid.getPageID(),
+      name,
+      maximize
+    }));
   }
   searchElements() {
     const enElements = document.querySelectorAll(`
@@ -30602,7 +30487,7 @@ class PremiumGift {
     const optionTypes = optionTypesParent.querySelectorAll(".en__pg__optionType");
     optionTypes.forEach((option, index) => {
       const label = option.querySelector("label");
-      const select = option.querySelector('select');
+      const select = option.querySelector("select");
       if (label && select) {
         const labelId = engrid_ENGrid.slugify(label.innerText) || index.toString();
         select.setAttribute("id", `premium-gift-option-type-${premiumGiftId}-${labelId}`);
