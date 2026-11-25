@@ -72,7 +72,7 @@
   --button_font-weight: 800;
   --button_font-family: var(--bold_font-family);
   --button_color: var(--color_white);
-  --button_font-size: 30px;
+  --button_font-size: 28px;
   // --button_font-weight: initial;
   // --button_line-height: initial;
   --button_background-color: var(--color_blue);
@@ -141,6 +141,13 @@ body:not(#en__pagebuilder)[data-engrid-no-body-footer]
       --engrid__page_background-color: var(--color_white);
       --engrid__body-footer_margin: 30px 0 0 0;
       --engrid__body-footer_background-color: #f5f5f5;
+
+      .en__component--advrow .body-footer {
+        grid-column: pc;
+        > * {
+          grid-column: bc;
+        }
+      }
     }
 
     &#en__pagebuilder {
@@ -165,7 +172,8 @@ body:not(#en__pagebuilder)[data-engrid-no-body-footer]
     }
 
     &[data-engrid-layout*="2col"] {
-      @media screen and (min-width: 768px) and (max-width: 1151px) {
+      @media screen and (min-width: 768px) and (max-width: 1120px) {
+        --donation-amount__button_padding: 18px 2px;
         --recurring-frequency__button_count: 1;
         --give-by-select__button_count: 1;
         --radio-to-buttons__button_count: 1;
@@ -204,7 +212,14 @@ body:not(#en__pagebuilder)[data-engrid-no-body-footer]
         --recurring-frequency__button_count: 1;
         --radio-to-buttons__button_count: 1;
       }
+    }
+
+    @media screen and (max-width: 640px) {
+      .radio-to-buttons_recurrfreq {
+        --fields_spacing-inline: 4px;
+      }
       .radio-to-buttons_donationAmt {
+        --donation-amount__button_padding: 18px 2px;
         --donation-amount__button_count: 3;
         .en__field--donationAmt.en__field--radio > .en__field__element {
           .en__field__item {
@@ -259,16 +274,6 @@ body:not(#en__pagebuilder)[data-engrid-no-body-footer]
           height: 29px;
           margin: 20px auto 0;
           background-size: 111px 29px;
-        }
-      }
-
-      @media only screen and (min-width: 768px) and (max-width: 1151px) {
-        width: 100%;
-        margin: 0 auto;
-        height: 97px;
-
-        #logo {
-          margin-left: 0;
         }
       }
 
@@ -367,18 +372,6 @@ body:not(#en__pagebuilder)[data-engrid-no-body-footer]
         }
       }
 
-      @media only screen and (min-width: 768px) and (max-width: 1151px) {
-        .footer-content-center {
-          width: auto;
-        }
-
-        .region-bottom-footer.left {
-          float: none !important;
-          width: auto;
-          margin: 0 auto;
-        }
-      }
-
       @media only screen and (-webkit-min-device-pixel-ratio: 2),
         only screen and (min-resolution: 192dpi) {
         a.footer-logo {
@@ -428,10 +421,7 @@ body:not(#en__pagebuilder)[data-engrid-no-body-footer]
     }
 
     .en__component--advrow .body-footer {
-      grid-column: pc;
-      > * {
-        grid-column: bc;
-      }
+      grid-column: bc;
     }
 
     .breadcrumbs p {
@@ -886,7 +876,7 @@ body:not(#en__pagebuilder)[data-engrid-no-body-footer]
     gap: 10px;
   }
 
-  @media screen and (max-width: 599px) {
+  @media screen and (max-width: 640px) {
     .en__ecardrecipients__detail {
       flex-direction: column;
       align-items: stretch;
@@ -914,7 +904,7 @@ body:not(#en__pagebuilder)[data-engrid-no-body-footer]
     input.ecardrecipient__name,
     input.ecardrecipient__email {
       background-color: var(--engrid__body-main_background-color);
-      @media screen and (min-width: 600px) {
+      @media screen and (min-width: 641px) {
         width: 47.5% !important;
       }
     }
@@ -931,7 +921,7 @@ body:not(#en__pagebuilder)[data-engrid-no-body-footer]
     }
   }
 
-  @media screen and (max-width: 600px) {
+  @media screen and (max-width: 640px) {
     .en__ecardrecipients__recipient {
       position: relative;
       flex-direction: column;
