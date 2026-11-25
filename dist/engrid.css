@@ -19,7 +19,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Wednesday, November 25, 2026 @ 12:54:44 ET
+ *  Date: Wednesday, November 25, 2026 @ 13:28:16 ET
  *  By: nick
  *  ENGrid styles: v0.28.9
  *  ENGrid scripts: v0.28.12
@@ -8657,7 +8657,7 @@ body:not(#en__pagebuilder)[data-engrid-no-body-footer] .en__component--advrow .b
   max-width:341px;
   width:100%;
 }
-[data-engrid-theme=aspca][data-engrid-subtheme=replica] .en__component--advrow .body-banner:has(.engrid-slideshow){
+[data-engrid-theme=aspca][data-engrid-subtheme=replica] .en__component--advrow .body-banner:has(.engrid-slideshow),[data-engrid-theme=aspca][data-engrid-subtheme=replica] .en__component--advrow .body-banner:has(.overlay-title){
   overflow-anchor:none;
 }
 @media screen and (min-width:768px){
